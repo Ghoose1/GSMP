@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+6QSLdVC11DbXwmDoeXytT75pg482/8ELr/AO5gqRNEWm/i3TOTSomcW82YG6Y/SLx90lrNJK1Im21gs2Uz1PA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Justin Grant\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\GSMP\\GSMP.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Justin Grant\\.nuget\\packages\\tmodloader.codeassist\\0.1.3\\tmodloader.codeassist.0.1.3.nupkg.sha512"
+  ],
+  "logs": []
+}
