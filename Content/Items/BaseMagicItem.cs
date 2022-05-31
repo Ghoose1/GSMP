@@ -17,7 +17,11 @@ namespace GSMP.Content.Items
         public int[] stats = new int[8];
         public BaseMagicItem() { for (int i = 0; i < stats.Length; i++) stats[i] = 10; }
         public override void SaveData(TagCompound tag) => tag["Stats"] = stats.ToList();
-        public override void LoadData(TagCompound tag) => stats = tag.Get<List<int>>("Stats").ToArray();
+        public override void LoadData(TagCompound tag)
+        {
+            stats = tag.Get<List<int>>("Stats").ToArray();
+            Item.damage = stats[1];
+        }
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.WaterBolt);
@@ -27,15 +31,22 @@ namespace GSMP.Content.Items
         public override bool AltFunctionUse(Player player)
         {
             for (int i = 0; i < stats.Length; i++) stats[i] = 12;
-            return true;
+            Item.damage = stats[1];
+            return false;
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             for (int i = 0; i < stats.Length; i++)
             {
-                TooltipLine Line = new TooltipLine(Mod, "GitGud", stats[i].ToString());
+                TooltipLine Line = new TooltipLine(Mod, "GitGud ", stats[i].ToString());
                 tooltips.Add(Line);
             }
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe(1)
+                .AddIngredient(ItemID.DirtBlock, 1)
+                .Register();
         }
     }
 }
