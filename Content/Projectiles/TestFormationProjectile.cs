@@ -27,12 +27,12 @@ namespace GSMP.Content.Projectiles
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             var SpawnSource = new TestProjEntitySource(player, null, 0, 0, Mode);
-            Projectile.NewProjectile(SpawnSource, position, velocity-velocity, ModContent.ProjectileType<TestFormationProjectile>(), damage, knockback, player.whoAmI, 0f);
+            Projectile.NewProjectile(SpawnSource, position, velocity, ModContent.ProjectileType<TestFormationProjectile>(), damage, knockback, player.whoAmI, 0f);
             return false;
         }
         public override bool AltFunctionUse(Player player)
         {
-            if (Mode != 3) Mode++;
+            if (Mode != 5) Mode++;
             else Mode = 1;
             Main.NewText("Mode: " + Mode.ToString());
             return false;
@@ -65,11 +65,53 @@ namespace GSMP.Content.Projectiles
         };
         private readonly int[,] funny =
         {
-            { 1, 0, 0, 0, 1, },
-            { 0, 0, 0, 0, 0, },
-            { 0, 0, 2, 0, 0, },
-            { 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 1, },
+            { 1, 1, 1, 0, 1, },
+            { 0, 0, 1, 0, 1, },
+            { 1, 1, 2, 1, 1, },
+            { 1, 0, 1, 0, 0, },
+            { 1, 0, 1, 1, 1, },
+        };
+        private readonly int[,] funnybig =
+        {
+            { 1, 0, 0, 1, 1, 1, 1, },
+            { 1, 0, 0, 1, 0, 0, 0, },
+            { 1, 0, 0, 1, 0, 0, 0, },
+            { 1, 1, 1, 2, 1, 1, 1, },
+            { 0, 0, 0, 1, 0, 0, 1, },
+            { 0, 0, 0, 1, 0, 0, 1, },
+            { 1, 1, 1, 1, 0, 0, 1, },
+        };
+        private readonly int[,] penis =
+        {
+            { 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, },
+            { 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 0, 1, 0, 1, 0, 1, },
+            { 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, },
+            { 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, },
+            { 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, },
+        };
+        private readonly int[,] linetest =
+        {
+            { 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }
         };
         #endregion
         //public Projectile[] form = new Projectile[8];
@@ -117,38 +159,16 @@ namespace GSMP.Content.Projectiles
                         }
                         break;
                     case 2:
-                        if (Projectile.ai[0] == 0)
-                        {
-                            ParentProjectile = null;
-                            Projectile.tileCollide = false;
-                            int Xoffset;
-                            int Yoffset;
-                            // i coulnt get Math.floor to work so i did this instead
-                            if (funny.GetLength(0) % 2 != 0) Xoffset = -(int)(funny.GetLength(0)/2 + 0.5);
-                            else Xoffset = (int)(funny.GetLength(0)/2);
-                            if (funny.GetLength(1) % 2 != 0) Yoffset = -(int)(funny.GetLength(0)/2 + 0.5);
-                            else Yoffset = (int)(funny.GetLength(1)/2);
-                            //form[0] = Projectile;
-                            for (int x = 0; x < funny.GetLength(1); x++)
-                            {
-                                for (int y = 0; y < funny.GetLength(0); y++)
-                                {
-                                    if (funny[y, x] == 1)
-                                    {
-                                        var SpawnSource = new TestProjEntitySource(Main.player[Projectile.owner], this, x + Xoffset, y + Yoffset, 2);
-                                        Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var1 = Source.var1;
-                            var2 = Source.var2;
-                            Projectile.tileCollide = false;
-                            ParentProjectile = Source.proj.Projectile;
-                            //form[(int)Projectile.ai[0]] = Projectile;
-                        }
+                        FormationSpawnHandeler(funny, Source);
+                        break;
+                    case 3:
+                        FormationSpawnHandeler(funnybig, Source);
+                        break;
+                    case 4:
+                        FormationSpawnHandeler(penis, Source);
+                        break;
+                    case 5:
+                        FormationSpawnHandeler(linetest, Source);
                         break;
                     default:
                         break;
@@ -170,6 +190,54 @@ namespace GSMP.Content.Projectiles
         internal int var1;
         internal int var2;
         internal int var3;
+        internal int Xoffset;
+        internal int Yoffset;
+        public void FormationSpawnHandeler(int[,] template, TestProjEntitySource Source)
+        {
+            if (Projectile.ai[0] == 0)
+            {
+                ParentProjectile = null;
+                Projectile.tileCollide = false;
+                // find Parent Proj point
+                for (int i = 0; i < template.GetLength(1); i++)
+                {
+                    for ( int j = 0; j < template.GetLength(0); j++)
+                    {
+                        if (template[j, i] == 2)
+                        {
+                            Xoffset = -i;
+                            Yoffset = -j;
+                            break;
+                        }
+                    }
+                }
+                //// i coulnt get Math.floor to work so i did this instead
+                //if (template.GetLength(1) % 2 != 0) Xoffset = -(int)(template.GetLength(1) / 2 + 0.5);
+                //else Xoffset = -(int)(template.GetLength(1) / 2);
+                //if (template.GetLength(0) % 2 != 0) Yoffset = -(int)(template.GetLength(0) / 2 + 0.5);
+                //else Yoffset = -(int)(template.GetLength(0) / 2);
+                //form[0] = Projectile;
+                for (int x = 0; x < template.GetLength(1); x++)
+                {
+                    for (int y = 0; y < template.GetLength(0); y++)
+                    {
+                        if (template[y, x] == 1)
+                        {
+                            var SpawnSource = new TestProjEntitySource(Main.player[Projectile.owner], this, x + Xoffset, y + Yoffset, 2);
+                            Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var1 = Source.var1;
+                var2 = Source.var2;
+                Projectile.tileCollide = false;
+                ParentProjectile = Source.proj.Projectile;
+                //form[(int)Projectile.ai[0]] = Projectile;
+            }
+        }
         public override void AI()
         {
             if (Formation == 1)
@@ -209,7 +277,7 @@ namespace GSMP.Content.Projectiles
             }
             else if (Formation == 2)
             {
-                timer += 4;
+                //timer += 4;
                 //Projectile.rotation = Projectile.velocity.ToRotation() + (float)Math.PI / 2f;
                 if (Projectile.ai[0] != 0)
                 {
@@ -217,15 +285,15 @@ namespace GSMP.Content.Projectiles
                     if (Main.projectile[ParentProjectile.whoAmI].active)
                     {
                         if (timer == 360) timer = 0;
-                        int Xdist = var1;
+                        int Xdist = -var1;
                         int Ydist = -var2;
                         //double angle = Math.Atan((Ydist / Xdist)) * (180 / Math.PI);
                         Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.whoAmI].position.X + Xdist*20, 
                                                       Main.projectile[ParentProjectile.whoAmI].position.Y + Ydist*20);
-                        double angle = (double)vector1.AngleTo(Main.projectile[ParentProjectile.whoAmI].position) * (180/Math.PI);
-                        if (timer == 240) Main.NewText(angle.ToString());
-                        Vector2 vector2 = new Vector2(Main.projectile[ParentProjectile.whoAmI].position.X + Xdist * 20 * (float)Math.Sqrt(8) * (float)(Math.Cos((timer + (int)angle) * (Math.PI / 180))),
-                                                      Main.projectile[ParentProjectile.whoAmI].position.Y + Ydist * 20 * (float)Math.Sqrt(8) * (float)(Math.Sin((timer + (int)angle) * (Math.PI / 180))));
+                        int angle = (int)(vector1.AngleTo(Main.projectile[ParentProjectile.whoAmI].position) * (180/Math.PI)) - 180;
+                        //if (timer == 240) Main.NewText(angle.ToString());
+                        Vector2 vector2 = new Vector2(Main.projectile[ParentProjectile.whoAmI].position.X + (float)(Math.Cos((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))),
+                                                      Main.projectile[ParentProjectile.whoAmI].position.Y + (float)(Math.Sin((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))));
                         //vector1 = new Vector2((float)(vector1.X * Math.Cos((timer+(int)angle) * (Math.PI / 180))), (float)(vector1.Y * Math.Sin((timer+(int)angle) * (Math.PI / 180))));
                         Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
                         //Projectile.rotation = Projectile.velocity.ToRotation();
