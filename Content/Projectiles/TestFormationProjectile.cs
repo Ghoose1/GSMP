@@ -91,7 +91,7 @@ namespace GSMP.Content.Projectiles
         };
         private readonly int[,] linetest =
         {
-            { 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
+            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -102,7 +102,7 @@ namespace GSMP.Content.Projectiles
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -288,12 +288,12 @@ namespace GSMP.Content.Projectiles
                         int Xdist = -var1;
                         int Ydist = -var2;
                         //double angle = Math.Atan((Ydist / Xdist)) * (180 / Math.PI);
-                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.whoAmI].position.X + Xdist*20, 
-                                                      Main.projectile[ParentProjectile.whoAmI].position.Y + Ydist*20);
-                        int angle = (int)(vector1.AngleTo(Main.projectile[ParentProjectile.whoAmI].position) * (180/Math.PI)) - 180;
+                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.whoAmI].Center.X + Xdist*20, 
+                                                      Main.projectile[ParentProjectile.whoAmI].Center.Y + Ydist*20);
+                        int angle = (int)(vector1.AngleTo(Main.projectile[ParentProjectile.whoAmI].Center) * (180/Math.PI)) - 180;
                         //if (timer == 240) Main.NewText(angle.ToString());
-                        Vector2 vector2 = new Vector2(Main.projectile[ParentProjectile.whoAmI].position.X + (float)(Math.Cos((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))),
-                                                      Main.projectile[ParentProjectile.whoAmI].position.Y + (float)(Math.Sin((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))));
+                        Vector2 vector2 = new Vector2(Main.projectile[ParentProjectile.whoAmI].Center.X + (float)(Math.Cos((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))),
+                                                      Main.projectile[ParentProjectile.whoAmI].Center.Y + (float)(Math.Sin((angle - 180 + timer) * (Math.PI / 180)) * 20 * Math.Sqrt(Math.Pow(Xdist, 2) + Math.Pow(Ydist, 2))));
                         //vector1 = new Vector2((float)(vector1.X * Math.Cos((timer+(int)angle) * (Math.PI / 180))), (float)(vector1.Y * Math.Sin((timer+(int)angle) * (Math.PI / 180))));
                         Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
                         //Projectile.rotation = Projectile.velocity.ToRotation();
