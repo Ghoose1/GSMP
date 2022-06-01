@@ -109,16 +109,20 @@ namespace GSMP.Content.Items
         {
             Projectile.width = 4;
             Projectile.height = 4;
-            Projectile.timeLeft = 60;
             Projectile.penetrate = -1;
             Projectile.friendly = true;
         }
         public override void OnSpawn(IEntitySource source)
         {
-            Projectile.maxPenetrate = stats[3];
-            Projectile.timeLeft = stats[4];
-            Projectile.ignoreWater = stats[5] == 1;
-            Projectile.tileCollide = stats[6] == 1;
+            if (source is MagicProjEntitySource Source)
+            {
+                stats = Source.Stats;
+                Projectile.maxPenetrate = stats[3];
+                Projectile.timeLeft = stats[4];
+                Projectile.ignoreWater = stats[5] == 1;
+                Projectile.tileCollide = stats[6] == 1;
+                Projectile.hostile = stats[7] == 1;
+            }
         }
         public override void AI()
         {
