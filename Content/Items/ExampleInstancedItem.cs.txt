@@ -193,7 +193,7 @@ namespace GSMP.Content.Items
 	//	}
 	//}
 
-	public class MagicProjEntitySource : EntitySource_Parent
+	public class ReeeProjEntitySource : EntitySource_Parent
 	{
 		public int[] Stats;
 		public MagicProjEntitySource(Entity entity, int[] Stats2, string context = null) : base(entity, context)
