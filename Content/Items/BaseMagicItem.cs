@@ -116,12 +116,14 @@ namespace GSMP.Content.Items
         {
             if (source is MagicProjEntitySource Source)
             {
+                #region stats
                 stats = Source.Stats;
                 Projectile.maxPenetrate = stats[3];
                 Projectile.timeLeft = stats[4];
                 Projectile.ignoreWater = stats[5] == 1;
                 Projectile.tileCollide = stats[6] == 1;
                 Projectile.hostile = stats[7] == 1;
+                #endregion
             }
         }
         public override void AI()
