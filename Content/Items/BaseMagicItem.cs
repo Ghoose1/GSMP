@@ -18,6 +18,7 @@ namespace GSMP.Content.Items
         public override string Name => "Custom Magic Item";
         // Formation variables:
         private int rotate;
+        public int[,] CustomFormation;
         // Note that when everything is fully implemented these will not be needed
         public int[][,] AllFormations =
         {
@@ -69,7 +70,6 @@ namespace GSMP.Content.Items
         static readonly int[,] linetest =
         {
             { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-            { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -79,7 +79,8 @@ namespace GSMP.Content.Items
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
             { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
@@ -149,23 +150,26 @@ namespace GSMP.Content.Items
             //"name",
         };
         // Custom Stat arrays
-        public int[] itemStats = new int[8];
+        public int[] itemStats = new int[9];
         public int[] projStats = new int[8];
         // Idk what this does but it makes it work so i'm not complaining
-        public BaseMagicItem() { 
-            for (int i = 0; i < itemStats.Length; i++) itemStats[i] = 10;
-            for (int i = 0; i < projStats.Length; i++) projStats[i] = 10;
+        public BaseMagicItem() {
+            int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
+            itemStats = DefaultItemStats;
+            int[] DefaultProjStats = { 0, 0, 0, 0, 60, 1, 0, 0 };
+            projStats = DefaultProjStats;
         }
         /// <summary>
         /// itemStats:
         /// 0 - damage |
         /// 1 - crit |
-        /// 2 - channel (1 = true) |
+        /// 2 - autoswing (1 = true) |
         /// 3 - knockBack |
         /// 4 - mana |
         /// 5 - shootSpeed |
         /// 6 - useStyle |
         /// 7 - useTime |
+        /// 8 - useAnimation |
         /// projStats:
         /// 0 - lifeSteal |
         /// 1 - manaSteal |
@@ -181,12 +185,13 @@ namespace GSMP.Content.Items
         {
             Item.damage = item.itemStats[0];
             Item.crit = item.itemStats[1];
-            Item.channel = item.itemStats[2] == 1;
+            Item.autoReuse = item.itemStats[2] == 1;
             Item.knockBack = item.itemStats[3];
             Item.mana = item.itemStats[4];
             Item.shootSpeed = item.itemStats[5];
             Item.useStyle = item.itemStats[6];
             Item.useTime = item.itemStats[7];
+            Item.useAnimation = item.itemStats[8];
         }
         public override void SaveData(TagCompound tag)
         {
@@ -210,6 +215,12 @@ namespace GSMP.Content.Items
         //    UpdateStats(this);
         //    return false;
         //}
+        public override bool AltFunctionUse(Player player)
+        {
+            rotate = rotate == 1 ? -1 : rotate + 1;
+            Main.NewText(rotate < 1 ? rotate == 0? "Rotation inactive" : "Rotation AntiClockwise" : "Rotation Clockwise");
+            return false;
+        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             for (int i = 0; i < itemStats.Length; i++)
@@ -222,7 +233,7 @@ namespace GSMP.Content.Items
         {
             int[] passStats = { 0, 0, rotate };
             var StatSource = new MagicProjEntitySource(player, projStats, null, passStats, AllFormations[projStats[7]]);
-            Projectile.NewProjectile(StatSource, position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
+            Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
             return false;
         }
         public override void AddRecipes()
@@ -250,6 +261,8 @@ namespace GSMP.Content.Items
         internal int[] vars;
         internal int Xoffset;
         internal int Yoffset;
+        internal bool locked;
+        internal float baseVelo;
         public override string Texture => "GSMP/Assets/Projectile Images/IceBolt";
         public Projectile ParentProjectile;
         public override void SetDefaults()
@@ -272,7 +285,7 @@ namespace GSMP.Content.Items
                 Projectile.tileCollide = stats[6] == 1;
                 //Projectile.hostile = stats[7] == 1;
                 #endregion
-                if (stats[2] == 1)
+                if (stats[2] == 1 || stats[2] == 2)// This code runs when a projectile uses a formation 
                 {
                     // When projectile is a main projectile, it initalises the other projectiles in the formation
                     if (Projectile.ai[0] == 0)
@@ -301,6 +314,7 @@ namespace GSMP.Content.Items
                                 {
                                     // x position, y position, rotate? (1 = true)
                                     int[] passStats = { x - Xoffset, y - Yoffset, vars[2] };
+                                    // player (required), BMI stats, This Projectile, Formation Stats, Formation
                                     var SpawnSource = new MagicProjEntitySource(Main.player[Projectile.owner], Source.Stats, this, passStats, Source.Form);
                                     Projectile.NewProjectile(SpawnSource, Main.player[Projectile.owner].position, 
                                         Projectile.velocity, ModContent.ProjectileType<BaseMagicProjectile>(), 
@@ -312,6 +326,8 @@ namespace GSMP.Content.Items
                     else
                     {
                         // Onspawn stuff for non-main projectiles
+                        baseVelo = 2;
+                        locked = false;
                         Projectile.tileCollide = false;
                         ParentProjectile = Source.proj.Projectile;
                     }
@@ -374,16 +390,17 @@ namespace GSMP.Content.Items
         }
         public override void AI()
         {
-            if (stats[2] == 1)
+            if (stats[2] == 1 || stats[2] == 2)
             {
                 if (Projectile.ai[0] != 0)
                 {
-                    if (vars[2] == 1) timer += 4;
+                    if (timer < 360) timer += 4 * vars[2];
+                    else timer = 0;
                     //checks if last proj is dead or not, if alive does formation stuff. 
                     if (Main.projectile[ParentProjectile.whoAmI].active)
                     {
                         // This doesn't nessissarily need to happen but probobly saves processing large numbers
-                        if (timer == 360) timer = 0;
+                        //if (timer == 360) timer = 0;
 
                         // Getting the amount the projectile should be offset on x and y axis. 
                         // Basically, if this didnt happen the whole formation would spawn to the bottom right of the main projectile
@@ -405,9 +422,24 @@ namespace GSMP.Content.Items
                         // Idk if that makes sence
                         Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist),
                                                       (float)(Main.projectile[ParentProjectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist));
+                        // This basically makes the projectile home into the position where it is meant to be at a speed such that it will do it instantly but not do weird homing stuff once it is there.
+                        float parentvelocity = (float)Math.Sqrt(Math.Pow(Main.projectile[ParentProjectile.whoAmI].velocity.X, 2) + Math.Pow(Main.projectile[ParentProjectile.whoAmI].velocity.Y, 2));
+                        if (stats[2] == 2)
+                        {
+                            if (!locked)
+                            {
+                                baseVelo = baseVelo >= Projectile.Center.Distance(vector2) ? Projectile.Center.Distance(vector2) : (float)Math.Pow(baseVelo, 1.1);
+                                if (Projectile.Center.Distance(vector2) < 20) locked = true;
+                                else
+                                {
+                                    Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * (parentvelocity + baseVelo / 2); //Projectile.Center.Distance(vector2)); // (float)Math.Sqrt(Math.Pow(Xoff, 2) + Math.Pow(Yoff, 2));
+                                }
+                            }
+                            else Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
+                        }
+                        else Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
 
-                        // This basically makes the projectile home into the position where it is meant to be at a speed cush that it will do it instantly but not do weird homing stuff once it is there.
-                        Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
+                        //  Projectile.velocity = (vector2 - Projectile.Center).SafeNormalize(Vector2.Zero) * Projectile.Center.Distance(vector2);
                     }
                     else
                     {
