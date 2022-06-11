@@ -267,6 +267,14 @@ namespace GSMP.Content.Projectiles
                 }
                 else
                 {
+                    int num9;
+                    num9 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 16, 0f, 0f, 100, Color.White, 2f);
+                    Dust obj;
+                    obj = Main.dust[num9];
+                    obj.velocity *= 0.3f;
+                    Main.dust[num9].position.X = Projectile.Center.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);
+                    Main.dust[num9].position.Y = Projectile.Center.Y + (float)(Projectile.height / 2) + (float)Main.rand.Next(-4, 5);
+                    Main.dust[num9].noGravity = true;
                     // whatever AI the main projectile should have. e.g. homing on cursor
                 }
             }

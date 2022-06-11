@@ -10,6 +10,37 @@ using Microsoft.Xna.Framework;
 
 namespace GSMP.Content.Items
 {
+    //class ArraySerializer : TagSerializer<int[,], TagCompound>
+    //{
+    //    public override TagCompound Serialize(int[,] value)
+    //    {
+    //        TagCompound tag = new TagCompound();
+
+    //        int j;
+    //        for (j = 0; j < value.GetLength(0); j++)
+    //        {
+    //            tag[j.ToString()] = value.GetValue(j);
+    //        }
+
+    //        tag["num"] = j;
+    //        return tag;
+    //    }
+
+    //    public override int[,] Deserialize(TagCompound tag) //=> new Rectangle(tag.GetInt("x"), tag.GetInt("y"), tag.GetInt("width"), tag.GetInt("height"));
+    //    {
+    //        int[,] array = { };
+
+    //        int i = (int)tag["num"];
+    //        int j;
+    //        for (j = 0; j <= i; j++)
+    //        {
+    //            array.SetValue(tag[j.ToString()], j);
+    //        }
+
+    //        return array;
+    //    }
+    //}
+
     public class BaseMagicItem : ModItem
     {
         public override string Texture => "GSMP/Assets/SpellBookRed";
@@ -17,7 +48,7 @@ namespace GSMP.Content.Items
 
         // Formation variables:
         private int rotate;
-        public int[,] CustomFormation; // Not implemented yet, need to learn ui 
+        public int[,] CustomFormation; 
         
         public int[][,] AllFormations = // Note that when everything is fully implemented these will not be needed
         {
@@ -152,16 +183,54 @@ namespace GSMP.Content.Items
 
         public override void SaveData(TagCompound tag)
         {
+            
             tag["ProjStats"] = projStats.ToList();
             tag["Stats"] = itemStats.ToList();
-            tag["CustomFormation"] = CustomFormation;
+
+            tag["num"] = CustomFormation.GetLength(0);
+            for (int j = 0; j < CustomFormation.GetLength(0); j++)
+            {
+                int[] temp = new int[CustomFormation.GetLength(1)];
+                for (int i = 0; i < temp.Length; i++)
+                {
+                    temp[i] = CustomFormation[j, i];
+                }
+                tag["Row " + j.ToString()] = temp.ToList();
+            }
         }
 
         public override void LoadData(TagCompound tag)
         {
-            projStats = tag.Get<List<int>>("ProjStats").ToArray();
-            itemStats = tag.Get<List<int>>("Stats").ToArray();
-            CustomFormation = tag.Get<int[,]>("CustomFormation");
+            if (tag.ContainsKey("ProjStats"))
+                projStats = tag.Get<List<int>>("ProjStats").ToArray();
+
+            if (tag.ContainsKey("Stats"))
+                itemStats = tag.Get<List<int>>("Stats").ToArray();
+
+            if (tag.ContainsKey("num") && tag.ContainsKey("Row 0"))
+            {
+                int[,] temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length];
+                int j = 0;
+
+                while (true)
+                {
+                    if (tag.ContainsKey("Row " + j.ToString()))
+                    {
+                        int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
+
+                        for (int i = 0; i < temp.GetLength(1); i++)
+                        {
+                            temp[j, i] = array[i];
+                        }
+                        j++;
+                    }
+                    else break;
+                        //CustomFormation.SetValue(tag.Get<List<int>>("Row " + j.ToString()).ToArray(), j);
+                }
+
+                CustomFormation = temp;
+            }
+
             UpdateStats(this);
         }
 

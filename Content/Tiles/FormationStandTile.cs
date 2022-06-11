@@ -71,12 +71,19 @@ namespace GSMP.Content.Tiles
 		{
 			Player player = Main.LocalPlayer;
 			Tile tile = Main.tile[i, j];
-			int X = i - (tile.TileFrameX / 18);
+			int X = i - (tile.TileFrameX / 18) + 1 - Size;
 			int Y = j - (tile.TileFrameY / 18) - 1;
+			int Size2 = 3 + (2 * Size);
 
 			if (player.HeldItem.ModItem is BaseMagicItem item)
 			{
-				int Size2 = 3 + (2 * Size);
+				// Y-4 [ ] [ ] [1] [ ] [ ]
+				// Y-3 [ ] [ ] [1] [ ] [ ]
+				// Y-2 [1] [1] [2] [1] [1]
+				// Y-1 [ ] [ ] [1] [ ] [ ]
+				// Y   [ ] [ ] [1] [ ] [ ]
+				//     X   X+1 X+2 X+3 X+4
+
 				int[,] Formation = new int[Size2, Size2];
 
 				int searchX;
@@ -90,8 +97,8 @@ namespace GSMP.Content.Tiles
 						if (Main.tile[X + searchX, Y - searchY].TileType == TileID.Stone)
 						{
 							originFound = true;
-							Formation[searchX, Size2 - searchY] = 2;
-						}
+							Formation[Size2 - 1 - searchY, searchX] = 2;
+						} 
                     }
                 }
 
@@ -101,7 +108,7 @@ namespace GSMP.Content.Tiles
 					{
 						for (searchY = 0; searchY < Size2; searchY++)
 						{
-							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[searchX, Size2 - searchY] != 2) Formation[searchX, Size2 - searchY] = 1; // MultiType will require this to be changed
+							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[Size2 - 1 - searchY, searchX] != 2) Formation[Size2 - 1 - searchY, searchX] = 1; // MultiType will require this to be changed
 						}
 					}
 
@@ -111,14 +118,33 @@ namespace GSMP.Content.Tiles
 			}
 			else
             {
-				//Size = 1;
+				Size = Size == 3 ? 1 : Size + 1;
+				Size2 = 3 + (2 * Size);
+				X = i - (tile.TileFrameX / 18) + 1 - Size;
+
+				for (int k = 1; k < Size2 - 1; k++)
+                {
+					for (int l = 1; l < Size2 - 1; l++)
+					{
+						WorldGen.KillWall(X + k, Y - l);
+						WorldGen.PlaceWall(X + k, Y - l, WallID.DiamondGemspark);
+                    }
+                }
+				for (int k = 0; k < Size2; k++)
+				{
+					WorldGen.KillWall(X + k, Y);
+					WorldGen.PlaceWall(X + k, Y, WallID.RubyGemspark);
+					WorldGen.KillWall(X + k, Y - Size2 + 1);
+					WorldGen.PlaceWall(X + k, Y - Size2 + 1, WallID.RubyGemspark);
+				}
+
+				Main.NewText("size " + Size2.ToString());
 
 				//WorldGen.PlaceTile(i - 5, j - 5, TileID.DiamondGemspark);
-
-				WorldGen.PlaceWall(X + 1 - Size, Y, WallID.DiamondGemspark);
-				WorldGen.PlaceWall(X + 3 + Size, Y, WallID.DiamondGemspark);
-				WorldGen.PlaceWall(X + 1 - Size, Y - 2 - (2 * Size), WallID.DiamondGemspark);
-				WorldGen.PlaceWall(X + 3 + Size, Y - 2 - (2 * Size), WallID.DiamondGemspark);
+				//WorldGen.PlaceWall(X, Y, WallID.DiamondGemspark);
+				//WorldGen.PlaceWall(X + 3 + Size, Y, WallID.DiamondGemspark);
+				//WorldGen.PlaceWall(X, Y - 2 - (2 * Size), WallID.DiamondGemspark);
+				//WorldGen.PlaceWall(X + 3 + Size, Y - 2 - (2 * Size), WallID.DiamondGemspark);
 				//item.UpdateStats(item);
 			}
 

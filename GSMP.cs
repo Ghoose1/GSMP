@@ -1,24 +1,21 @@
-using Terraria.ModLoader;
-using Terraria.UI;
-using GSMP.Content.UI;
-using Terraria;
 using System.Collections.Generic;
+using System.Linq;
+using Terraria;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using Terraria.ID;
+using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
+using GSMP.Content.Items;
 
 namespace GSMP
 {
     public class GSMP : Mod
     {
-        internal PracticeBar PracticeBar;
-
-        private UserInterface _PracticeBar;
 
         public override void Load()
         {
-            PracticeBar = new PracticeBar();
-            PracticeBar.Activate();
-            _PracticeBar = new UserInterface();
-            _PracticeBar.SetState(PracticeBar);
+            //TagSerializer(new ArraySerializer());
         }
         public static void Log(object message)
         {
