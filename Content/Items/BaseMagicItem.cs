@@ -10,36 +10,48 @@ using Microsoft.Xna.Framework;
 
 namespace GSMP.Content.Items
 {
-    //class ArraySerializer : TagSerializer<int[,], TagCompound>
-    //{
-    //    public override TagCompound Serialize(int[,] value)
-    //    {
-    //        TagCompound tag = new TagCompound();
+    class ArraySerializer : TagSerializer<int[,], TagCompound>
+    {
+        public override TagCompound Serialize(int[,] value)
+        {
+            TagCompound tag = new TagCompound();
 
-    //        int j;
-    //        for (j = 0; j < value.GetLength(0); j++)
-    //        {
-    //            tag[j.ToString()] = value.GetValue(j);
-    //        }
+            tag["num"] = value.GetLength(0);
+            for (int j = 0; j < value.GetLength(0); j++)
+            {
+                int[] temp = new int[value.GetLength(1)];
+                for (int i = 0; i < temp.Length; i++)
+                {
+                    temp[i] = value[j, i];
+                }
+                tag["Row " + j.ToString()] = temp.ToList();
+            }
+            return tag;
+        }
 
-    //        tag["num"] = j;
-    //        return tag;
-    //    }
+        public override int[,] Deserialize(TagCompound tag) 
+        {
+            int[,] temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length];
+            int j = 0;
 
-    //    public override int[,] Deserialize(TagCompound tag) //=> new Rectangle(tag.GetInt("x"), tag.GetInt("y"), tag.GetInt("width"), tag.GetInt("height"));
-    //    {
-    //        int[,] array = { };
+            while (true)
+            {
+                if (tag.ContainsKey("Row " + j.ToString()))
+                {
+                    int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
 
-    //        int i = (int)tag["num"];
-    //        int j;
-    //        for (j = 0; j <= i; j++)
-    //        {
-    //            array.SetValue(tag[j.ToString()], j);
-    //        }
+                    for (int i = 0; i < temp.GetLength(1); i++)
+                    {
+                        temp[j, i] = array[i];
+                    }
+                    j++;
+                }
+                else break;
+            }
 
-    //        return array;
-    //    }
-    //}
+            return temp;
+        }
+    }
 
     public class BaseMagicItem : ModItem
     {
@@ -48,89 +60,7 @@ namespace GSMP.Content.Items
 
         // Formation variables:
         private int rotate;
-        public int[,] CustomFormation; 
-        
-        public int[][,] AllFormations = // Note that when everything is fully implemented these will not be needed
-        {
-            sword, funny, funnybig, penis, linetest //, name
-        };
-
-        // if you want to add a shape, add it to here with a name and formated like the others, then add the name to the above list and Shapelist
-        // make sure there is a '2' where you want the shape to rotate
-        #region formation shapes
-        static readonly int[,] sword =
-        {
-            { 0, 1, 0 },
-            { 0, 1, 0 },
-            { 0, 1, 0 },
-            { 1, 2, 1 },
-            { 0, 1, 0 },
-        };
-        static readonly int[,] funny =
-        {
-            { 1, 1, 1, 0, 1, },
-            { 0, 0, 1, 0, 1, },
-            { 1, 1, 2, 1, 1, },
-            { 1, 0, 1, 0, 0, },
-            { 1, 0, 1, 1, 1, },
-        };
-        static readonly int[,] funnybig =
-        {
-            { 1, 0, 0, 1, 1, 1, 1, },
-            { 1, 0, 0, 1, 0, 0, 0, },
-            { 1, 0, 0, 1, 0, 0, 0, },
-            { 1, 1, 1, 2, 1, 1, 1, },
-            { 0, 0, 0, 1, 0, 0, 1, },
-            { 0, 0, 0, 1, 0, 0, 1, },
-            { 1, 1, 1, 1, 0, 0, 1, },
-        };
-        static readonly int[,] penis =
-        {
-            { 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, },
-            { 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, },
-            { 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, },
-            { 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, },
-            { 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, },
-        };
-        static readonly int[,] linetest =
-        {
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-            { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }
-        };
-        //static readonly int[,] name =
-        //{
-        //    { }
-        //};
-        #endregion
-
-        public string[] Shapelist =
-        {
-            "sword",
-            "funny",
-            "funnybig",
-            "penis",
-            "linetest",
-            //"name",
-        };
+        public int[,] CustomFormation;
 
         // Custom Stat arrays
         public int[] itemStats = new int[9];
@@ -141,7 +71,15 @@ namespace GSMP.Content.Items
             itemStats = DefaultItemStats;
             int[] DefaultProjStats = { 0, 0, 0, 0, 60, 1, 0, 0 };
             projStats = DefaultProjStats;
-            CustomFormation = funny;
+            int[,] DefaultFormation =
+            {
+                { 1, 1, 1, 1, 1, },
+                { 1, 1, 1, 1, 1, },
+                { 1, 1, 2, 1, 1, },
+                { 1, 1, 1, 1, 1, },
+                { 1, 1, 1, 1, 1, },
+            };
+            CustomFormation = DefaultFormation;
         }
 
         /// <summary>
@@ -186,17 +124,7 @@ namespace GSMP.Content.Items
             
             tag["ProjStats"] = projStats.ToList();
             tag["Stats"] = itemStats.ToList();
-
-            tag["num"] = CustomFormation.GetLength(0);
-            for (int j = 0; j < CustomFormation.GetLength(0); j++)
-            {
-                int[] temp = new int[CustomFormation.GetLength(1)];
-                for (int i = 0; i < temp.Length; i++)
-                {
-                    temp[i] = CustomFormation[j, i];
-                }
-                tag["Row " + j.ToString()] = temp.ToList();
-            }
+            tag["Formation"] = CustomFormation;
         }
 
         public override void LoadData(TagCompound tag)
@@ -207,29 +135,8 @@ namespace GSMP.Content.Items
             if (tag.ContainsKey("Stats"))
                 itemStats = tag.Get<List<int>>("Stats").ToArray();
 
-            if (tag.ContainsKey("num") && tag.ContainsKey("Row 0"))
-            {
-                int[,] temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length];
-                int j = 0;
-
-                while (true)
-                {
-                    if (tag.ContainsKey("Row " + j.ToString()))
-                    {
-                        int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
-
-                        for (int i = 0; i < temp.GetLength(1); i++)
-                        {
-                            temp[j, i] = array[i];
-                        }
-                        j++;
-                    }
-                    else break;
-                        //CustomFormation.SetValue(tag.Get<List<int>>("Row " + j.ToString()).ToArray(), j);
-                }
-
-                CustomFormation = temp;
-            }
+            if (tag.ContainsKey("Formation"))
+                CustomFormation = tag.Get<int[,]>("Formation");
 
             UpdateStats(this);
         }
@@ -242,17 +149,8 @@ namespace GSMP.Content.Items
 
         public override bool AltFunctionUse(Player player)
         {
-            if (Main.keyState.PressingShift())
-            {
-                rotate = rotate == 1 ? -1 : rotate + 1;
-                Main.NewText(rotate < 1 ? rotate == 0 ? "Rotation inactive" : "Rotation AntiClockwise" : "Rotation Clockwise");
-            }
-            else
-            {
-                if (projStats[7] < Shapelist.Length - 1) projStats[7]++;
-                else projStats[7] = 0;
-                Main.NewText("Formation: " + Shapelist[projStats[7]]);
-            }
+            rotate = rotate == 1 ? -1 : rotate + 1;
+            Main.NewText(rotate < 1 ? rotate == 0 ? "Rotation inactive" : "Rotation AntiClockwise" : "Rotation Clockwise");
             return false;
         }
 

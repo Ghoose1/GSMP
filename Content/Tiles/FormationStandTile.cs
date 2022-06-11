@@ -127,15 +127,20 @@ namespace GSMP.Content.Tiles
 					for (int l = 1; l < Size2 - 1; l++)
 					{
 						WorldGen.KillWall(X + k, Y - l);
-						WorldGen.PlaceWall(X + k, Y - l, WallID.DiamondGemspark);
+						WorldGen.PlaceWall(X + k, Y - l, ModContent.WallType<IndicatorWhite>());
                     }
                 }
 				for (int k = 0; k < Size2; k++)
 				{
 					WorldGen.KillWall(X + k, Y);
-					WorldGen.PlaceWall(X + k, Y, WallID.RubyGemspark);
+					WorldGen.PlaceWall(X + k, Y, ModContent.WallType<IndicatorBlue>());
 					WorldGen.KillWall(X + k, Y - Size2 + 1);
-					WorldGen.PlaceWall(X + k, Y - Size2 + 1, WallID.RubyGemspark);
+					WorldGen.PlaceWall(X + k, Y - Size2 + 1, ModContent.WallType<IndicatorBlue>());
+
+					WorldGen.KillWall(X, Y - k);
+					WorldGen.PlaceWall(X, Y - k, ModContent.WallType<IndicatorBlue>());
+					WorldGen.KillWall(X + Size2 - 1, Y - k);
+					WorldGen.PlaceWall(X + Size2 - 1, Y - k, ModContent.WallType<IndicatorBlue>());
 				}
 
 				Main.NewText("size " + Size2.ToString());
