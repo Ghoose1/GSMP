@@ -31,22 +31,27 @@ namespace GSMP.Content.Items
 
         public override int[,] Deserialize(TagCompound tag) 
         {
-            int[,] temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length];
-            int j = 0;
+            int[,] temp = { { 2 } };
 
-            while (true)
+            if (tag.ContainsKey("num") && tag.ContainsKey("Row 0"))
             {
-                if (tag.ContainsKey("Row " + j.ToString()))
-                {
-                    int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
+                temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length]; // Doesnt assume sqaure
+                int j = 0;
 
-                    for (int i = 0; i < temp.GetLength(1); i++)
+                while (true)
+                {
+                    if (tag.ContainsKey("Row " + j.ToString()))
                     {
-                        temp[j, i] = array[i];
+                        int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
+
+                        for (int i = 0; i < temp.GetLength(1); i++)
+                        {
+                            temp[j, i] = array[i];
+                        }
+                        j++;
                     }
-                    j++;
+                    else break;
                 }
-                else break;
             }
 
             return temp;
@@ -63,13 +68,34 @@ namespace GSMP.Content.Items
         public int[,] CustomFormation;
 
         // Custom Stat arrays
+        /// <summary>
+        /// 0 - damage |
+        /// 1 - crit |
+        /// 2 - autoswing (1 = true) |
+        /// 3 - knockBack |
+        /// 4 - mana |
+        /// 5 - shootSpeed |
+        /// 6 - useStyle |
+        /// 7 - useTime |
+        /// 8 - useAnimation |
+        /// </summary>
         public int[] itemStats = new int[9];
+        /// <summary>
+        /// 0 - lifeSteal (Unused) |
+        /// 1 - manaSteal (Unused) |
+        /// 2 - CustomAIType |
+        /// 3 - maxPenetrate |
+        /// 4 - timeLeft |
+        /// 5 - ignoreWater (1 = true) |
+        /// 6 - tileCollide (1 = true) |
+        /// 7 - formation number (Depreciated) |
+        /// </summary>
         public int[] projStats = new int[8];
 
         public BaseMagicItem() { // The default stats so that when a item is created it actually works
             int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
             itemStats = DefaultItemStats;
-            int[] DefaultProjStats = { 0, 0, 0, 0, 60, 1, 0, 0 };
+            int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
             projStats = DefaultProjStats;
             int[,] DefaultFormation =
             {
@@ -92,7 +118,7 @@ namespace GSMP.Content.Items
         /// 5 - shootSpeed |
         /// 6 - useStyle |
         /// 7 - useTime |
-        /// 8 - useAnimation |
+        /// 8 - useAnimation | 
         /// projStats:
         /// 0 - lifeSteal |
         /// 1 - manaSteal |

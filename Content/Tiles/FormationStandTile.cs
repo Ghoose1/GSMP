@@ -20,7 +20,8 @@ namespace GSMP.Content.Tiles
     {
 		public override string Texture => "GSMP/Assets/FormationStand";
 
-		internal int Size;
+		internal int YSize;
+		internal int XSize;
 
         public override void SetStaticDefaults()
 		{
@@ -28,12 +29,10 @@ namespace GSMP.Content.Tiles
 			Main.tileFrameImportant[Type] = true;
 			Main.tileLavaDeath[Type] = true;
 			//TileID.Sets.HasOutlines[Type] = true;
-			TileID.Sets.IsValidSpawnPoint[Type] = true;
 			TileID.Sets.DisableSmartCursor[Type] = true;
 
 			// Placement
-			TileObjectData.newTile.CopyFrom(TileObjectData.Style5x4); // this style already takes care of direction for us
-			//TileObjectData.newTile.CoordinateHeights = new[] { 16, 18, 32, 34 };
+			TileObjectData.newTile.CopyFrom(TileObjectData.Style5x4); 
 			TileObjectData.newTile.CoordinatePaddingFix = new Point16(0, -2);
 			TileObjectData.addTile(Type);
 
@@ -41,26 +40,9 @@ namespace GSMP.Content.Tiles
 			ModTranslation name = CreateMapEntryName();
 			name.SetDefault("Formation Stand");
 			AddMapEntry(new Color(200, 200, 200), name);
-			Size = 1;
+			XSize = 1;
+			YSize = 1;
 		}
-
-		public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
-		{
-			return true;
-		}
-
-		public override void ModifySmartInteractCoords(ref int width, ref int height, ref int frameWidth, ref int frameHeight, ref int extraY)
-		{
-			// Because beds have special smart interaction, this splits up the left and right side into the necessary 2x2 sections
-			width = 2; // Default to the Width defined for TileObjectData.newTile
-			height = 2; // Default to the Height defined for TileObjectData.newTile
-						//extraY = 0; // Depends on how you set up frameHeight and CoordinateHeights and CoordinatePaddingFix.Y
-		}
-
-		//public override void NumDust(int i, int j, bool fail, ref int num)
-		//{
-		//	num = 1;
-		//}
 
 		public override void KillMultiTile(int i, int j, int frameX, int frameY)
 		{
@@ -71,9 +53,10 @@ namespace GSMP.Content.Tiles
 		{
 			Player player = Main.LocalPlayer;
 			Tile tile = Main.tile[i, j];
-			int X = i - (tile.TileFrameX / 18) + 1 - Size;
+			int X = i - (tile.TileFrameX / 18) + 1 - XSize;
 			int Y = j - (tile.TileFrameY / 18) - 1;
-			int Size2 = 3 + (2 * Size);
+			int XSize2 = 3 + (2 * XSize);
+			int YSize2 = 3 + (2 * YSize);
 
 			if (player.HeldItem.ModItem is BaseMagicItem item)
 			{
@@ -84,31 +67,31 @@ namespace GSMP.Content.Tiles
 				// Y   [ ] [ ] [1] [ ] [ ]
 				//     X   X+1 X+2 X+3 X+4
 
-				int[,] Formation = new int[Size2, Size2];
+				int[,] Formation = new int[YSize2, XSize2];
 
 				int searchX;
 				int searchY;
 				bool originFound = false;
 
-				for (searchX = 0; searchX < Size2; searchX++)
+				for (searchX = 0; searchX < XSize2; searchX++)
                 {
-					for (searchY = 0; searchY < Size2; searchY++)
+					for (searchY = 0; searchY < YSize2; searchY++)
                     {
 						if (Main.tile[X + searchX, Y - searchY].TileType == TileID.Stone)
 						{
 							originFound = true;
-							Formation[Size2 - 1 - searchY, searchX] = 2;
+							Formation[YSize2 - 1 - searchY, searchX] = 2;
 						} 
                     }
                 }
 
 				if (originFound)
 				{
-					for (searchX = 0; searchX < Size2; searchX++)
+					for (searchX = 0; searchX < XSize2; searchX++)
 					{
-						for (searchY = 0; searchY < Size2; searchY++)
+						for (searchY = 0; searchY < YSize2; searchY++)
 						{
-							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[Size2 - 1 - searchY, searchX] != 2) Formation[Size2 - 1 - searchY, searchX] = 1; // MultiType will require this to be changed
+							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[YSize2 - 1 - searchY, searchX] != 2) Formation[YSize2 - 1 - searchY, searchX] = 1; // MultiType will require this to be changed
 						}
 					}
 
@@ -118,32 +101,38 @@ namespace GSMP.Content.Tiles
 			}
 			else
             {
-				Size = Size == 3 ? 1 : Size + 1;
-				Size2 = 3 + (2 * Size);
-				X = i - (tile.TileFrameX / 18) + 1 - Size;
+				XSize = XSize == 3 ? 1 : XSize + 1;
+				YSize = YSize == 3 ? 1 : YSize + 1;
+				XSize2 = 3 + (2 * XSize);
+				YSize2 = 3 + (2 * YSize);
+				X = i - (tile.TileFrameX / 18) + 1 - XSize;
 
-				for (int k = 1; k < Size2 - 1; k++)
+				for (int k = 1; k < XSize2 - 1; k++)
                 {
-					for (int l = 1; l < Size2 - 1; l++)
+					for (int l = 1; l < YSize2 - 1; l++)
 					{
 						WorldGen.KillWall(X + k, Y - l);
 						WorldGen.PlaceWall(X + k, Y - l, ModContent.WallType<IndicatorWhite>());
                     }
                 }
-				for (int k = 0; k < Size2; k++)
+				for (int k = 0; k < XSize2; k++)
 				{
 					WorldGen.KillWall(X + k, Y);
 					WorldGen.PlaceWall(X + k, Y, ModContent.WallType<IndicatorBlue>());
-					WorldGen.KillWall(X + k, Y - Size2 + 1);
-					WorldGen.PlaceWall(X + k, Y - Size2 + 1, ModContent.WallType<IndicatorBlue>());
-
-					WorldGen.KillWall(X, Y - k);
-					WorldGen.PlaceWall(X, Y - k, ModContent.WallType<IndicatorBlue>());
-					WorldGen.KillWall(X + Size2 - 1, Y - k);
-					WorldGen.PlaceWall(X + Size2 - 1, Y - k, ModContent.WallType<IndicatorBlue>());
+					WorldGen.KillWall(X + k, Y - YSize2 + 1);
+					WorldGen.PlaceWall(X + k, Y - YSize2 + 1, ModContent.WallType<IndicatorBlue>());
+				}
+				for (int l = 0; l < YSize2; l++)
+                {
+					WorldGen.KillWall(X, Y - l);
+					WorldGen.PlaceWall(X, Y - l, ModContent.WallType<IndicatorBlue>());
+					WorldGen.KillWall(X + XSize2 - 1, Y - l);
+					WorldGen.PlaceWall(X + XSize2 - 1, Y - l, ModContent.WallType<IndicatorBlue>());
 				}
 
-				Main.NewText("size " + Size2.ToString());
+				Main.NewText("X size: " + XSize2.ToString());
+
+				Main.NewText("Y size: " + YSize2.ToString());
 
 				//WorldGen.PlaceTile(i - 5, j - 5, TileID.DiamondGemspark);
 				//WorldGen.PlaceWall(X, Y, WallID.DiamondGemspark);
@@ -155,26 +144,5 @@ namespace GSMP.Content.Tiles
 
 			return true;
 		}
-
-		//public override void MouseOver(int i, int j)
-		//{
-		//	Player player = Main.LocalPlayer;
-
-		//	if (!Player.IsHoveringOverABottomSideOfABed(i, j))
-		//	{
-		//		if (player.IsWithinSnappngRangeToTile(i, j, PlayerSleepingHelper.BedSleepingMaxDistance))
-		//		{ // Match condition in RightClick. Interaction should only show if clicking it does something
-		//			player.noThrow = 2;
-		//			player.cursorItemIconEnabled = true;
-		//			player.cursorItemIconID = ItemID.SleepingIcon;
-		//		}
-		//	}
-		//	else
-		//	{
-		//		player.noThrow = 2;
-		//		player.cursorItemIconEnabled = true;
-		//		player.cursorItemIconID = ModContent.ItemType<Items.Placeable.FormationStandItem>();
-		//	}
-		//}
 	}
 }
