@@ -27,4 +27,15 @@ namespace GSMP.Content.GlobalItems
 			item.maxStack =  69420;
         }
     }
+	public class Target : GlobalNPC
+    {
+        public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
+        {
+			return entity.type == NPCID.TargetDummy;
+        }
+        public bool CanBeChasedBy()
+        {
+			return true;
+        }
+    }
 }
