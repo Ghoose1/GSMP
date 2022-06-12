@@ -102,56 +102,43 @@ namespace GSMP.Content.Tiles
 			}
 			else
             {
-				//Main.NewText("i: " + (tile.TileFrameX / 18).ToString());
-				//Main.NewText("j: " + (tile.TileFrameY / 18).ToString());
-				//int i2 = i - (i - (tile.TileFrameX / 18));
 				if ((tile.TileFrameY / 18) == 0)
                 {
-					if ((tile.TileFrameX / 18) == 0) XSize++;
-					if ((tile.TileFrameX / 18) == 1 && XSize > 1) XSize--;
-					if ((tile.TileFrameX / 18) == 3) YSize++;
-					if ((tile.TileFrameX / 18) == 4 && YSize > 1) YSize--;
+					if ((tile.TileFrameX / 18) == 0)
+					{
+						XSize++;
+						XSize2 += 2;
+						Main.NewText("X size: " + XSize2.ToString());
+					}
+					if ((tile.TileFrameX / 18) == 1 && XSize > 1)
+					{
+						XSize--;
+						XSize2 -= 2;
+						Main.NewText("X size: " + XSize2.ToString());
+					}
+					if ((tile.TileFrameX / 18) == 3)
+					{
+						YSize++;
+						YSize2 += 2;
+						Main.NewText("Y size: " + YSize2.ToString());
+					}
+					if ((tile.TileFrameX / 18) == 4 && YSize > 1)
+					{
+						YSize--;
+						YSize2 -= 2;
+						Main.NewText("Y size: " + YSize2.ToString());
+					}
+					if ((tile.TileFrameX / 18) == 2)
+                    {
+						XSize = 1;
+						XSize2 = 5;
+						YSize = 1;
+						YSize2 = 5;
+						Main.NewText("X size: " + XSize2.ToString());
+						Main.NewText("Y size: " + YSize2.ToString());
+					}
 				}
-
-				XSize2 = 3 + (2 * XSize);
-				YSize2 = 3 + (2 * YSize);
-				X = i - (tile.TileFrameX / 18) + 1 - XSize;
-
-				//for (int k = 1; k < XSize2 - 1; k++)
-    //            {
-				//	for (int l = 1; l < YSize2 - 1; l++)
-				//	{
-				//		WorldGen.KillWall(X + k, Y - l);
-				//		WorldGen.PlaceWall(X + k, Y - l, ModContent.WallType<IndicatorWhite>());
-    //                }
-    //            }
-				//for (int k = 0; k < XSize2; k++)
-				//{
-				//	WorldGen.KillWall(X + k, Y);
-				//	WorldGen.PlaceWall(X + k, Y, ModContent.WallType<IndicatorBlue>());
-				//	WorldGen.KillWall(X + k, Y - YSize2 + 1);
-				//	WorldGen.PlaceWall(X + k, Y - YSize2 + 1, ModContent.WallType<IndicatorBlue>());
-				//}
-				//for (int l = 0; l < YSize2; l++)
-    //            {
-				//	WorldGen.KillWall(X, Y - l);
-				//	WorldGen.PlaceWall(X, Y - l, ModContent.WallType<IndicatorBlue>());
-				//	WorldGen.KillWall(X + XSize2 - 1, Y - l);
-				//	WorldGen.PlaceWall(X + XSize2 - 1, Y - l, ModContent.WallType<IndicatorBlue>());
-				//}
-
-				Main.NewText("X size: " + XSize2.ToString());
-
-				Main.NewText("Y size: " + YSize2.ToString());
-
-				//WorldGen.PlaceTile(i - 5, j - 5, TileID.DiamondGemspark);
-				//WorldGen.PlaceWall(X, Y, WallID.DiamondGemspark);
-				//WorldGen.PlaceWall(X + 3 + Size, Y, WallID.DiamondGemspark);
-				//WorldGen.PlaceWall(X, Y - 2 - (2 * Size), WallID.DiamondGemspark);
-				//WorldGen.PlaceWall(X + 3 + Size, Y - 2 - (2 * Size), WallID.DiamondGemspark);
-				//item.UpdateStats(item);
 			}
-
 			return true;
 		}
 
@@ -159,103 +146,82 @@ namespace GSMP.Content.Tiles
 		{
 			Player player = Main.LocalPlayer;
 			Tile tile = Main.tile[i, j];
-			int X = i - (tile.TileFrameX / 18) + 2 - XSize;
+			int X = i - (tile.TileFrameX / 18) + 1 - XSize;
 			int Y = j - (tile.TileFrameY / 18) - 1;
 			int XSize2 = 3 + (2 * XSize);
 			int YSize2 = 3 + (2 * YSize);
-
 			Vector2 tilepos = new Vector2(X * 16, Y * 16);
-			if (closer && player.Distance(tilepos) < 1280)
+
+			if (player.Distance(
+					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
+					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
+					< 256 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2))
 			{
-				Vector2 pos;
-				int dust; // = Dust.NewDust(tilepos, 4, 4, 173, 0, 0, 0);
-				//            for (int k = 1; k < XSize2 - 1; k++)
-				//{
-				//	for (int l = 1; l < YSize2 - 1; l++)
-				//	{
-				//		int dust = Dust.NewDust(tilepos, 4, 4, 173, 0, 0, 0);
-				//		Main.dust[dust].position.Y = (Y - l) * 16;
-				//		Main.dust[dust].position.X = (X + k) * 16;
-				//	}
-				//            }
+				for (int angle = 0; angle <= 360; angle++)
+					CreateAura((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
+							   (j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2),
+							   128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2), angle);
 
-				for (int k = 0; k < XSize2; k++)
-                {
-					if (Main.rand.Next(6) == 0)
-					{
-						pos = new Vector2((X + k) * 16 - 16 - 4, (Y) * 16 + 16 - 4);
-						dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
-						//Main.dust[dust].position.Y = (Y) * 16;
-						//Main.dust[dust].position.X = (X + k) * 16;
-						Main.dust[dust].velocity.Y *= 0.1f;
-						Main.dust[dust].velocity.X *= 0.1f;
-
-						pos = new Vector2((X + k) * 16 - 16 - 4, (Y - YSize2 + 1) * 16 - 4);
-						dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
-						//Main.dust[dust].position.Y = (Y - YSize2 + 1) * 16;
-						//Main.dust[dust].position.X = (X + k) * 16;
-						Main.dust[dust].velocity.Y *= 0.1f;
-						Main.dust[dust].velocity.X *= 0.1f;
-					}
-                }
-                for (int l = 0; l < YSize2; l++)
+				if (player.Distance(
+					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
+					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
+					< 128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2))
 				{
-					if (Main.rand.Next(6) == 0)
+					Vector2 pos;
+					int dust;
+					int X2 = (X * 16) + 4; // Middle of blocks instead of top-right corners
+					int Y2 = (Y * 16) + 4;
+
+					for (int k = 0; k < XSize2 * 16; k += 16)
 					{
-						pos = new Vector2((X) * 16 - 16 - 4, (Y - l) * 16);
-						dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
-						//Main.dust[dust].position.Y = (Y - l) * 16;
-						//Main.dust[dust].position.X = (X) * 16;
-						Main.dust[dust].velocity.Y *= 0.1f;
-						Main.dust[dust].velocity.X *= 0.1f;
+						if (Main.rand.Next(6) == 0)
+						{
+							// Bottom Row
+							pos = new Vector2(X2 + k - 6, Y2 + 12);
+							dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
+							Main.dust[dust].velocity.Y *= 0.1f;
+							Main.dust[dust].velocity.X *= 0.1f;
 
-						pos = new Vector2((X + XSize2 - 1) * 16 - 4, (Y - l) * 16);
-						dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
-						//Main.dust[dust].position.Y = (Y - l) * 16;
-						//Main.dust[dust].position.X = (X + XSize2 - 1) * 16;
-						Main.dust[dust].velocity.Y *= 0.1f;
-						Main.dust[dust].velocity.X *= 0.1f;
+							// Top Row
+							pos = new Vector2(X2 + k - 6, Y2 + 12 - (YSize2 * 16));
+							dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
+							Main.dust[dust].velocity.Y *= 0.1f;
+							Main.dust[dust].velocity.X *= 0.1f;
+						}
 					}
-                }
 
-            }
+					for (int l = 0; l < YSize2 * 16; l += 16)
+					{
+						if (Main.rand.Next(6) == 0)
+						{
+							// Left 
+							pos = new Vector2(X2 - 8, Y2 - l);
+							dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
+							Main.dust[dust].velocity.Y *= 0.1f;
+							Main.dust[dust].velocity.X *= 0.1f;
+
+							// Right
+							pos = new Vector2(X2 + XSize2 * 16 - 8, Y2 - l);
+							dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
+							Main.dust[dust].velocity.Y *= 0.1f;
+							Main.dust[dust].velocity.X *= 0.1f;
+						}
+					}
+				}
+			}
 		}
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        public void CreateAura(int x, int y, int dist, int angle)
         {
-            base.DrawEffects(i, j, spriteBatch, ref drawData);
-        }
+			Vector2 Center = new Vector2(x, y);
+			if (Main.rand.Next(100) == 0)
+			{
+				Vector2 vector2 = new Vector2((float)(Center.X + Math.Cos(angle * (Math.PI / 180f)) * dist),
+												(float)(Center.Y + Math.Sin(angle * (Math.PI / 180f)) * dist));
+				int dust = Dust.NewDust(vector2, 0, 0, 173, 0, 0, 0);
+				Main.dust[dust].velocity.Y *= 0.1f;
+				Main.dust[dust].velocity.X *= 0.1f;
+			}
+		}
     }
-
-	public class IndicatorDust : ModDust
-    {
-        public override string Texture => "GSMP/Assets/IndicatorDust";
-
-        public override void OnSpawn(Dust dust)
-		{
-			dust.noGravity = true; // Makes the dust have no gravity.
-			dust.noLight = false; // Makes the dust emit no light.
-								  //dust.scale *= 1.5f; // Multiplies the dust's initial scale by 1.5.
-			
-			dust.velocity *= 0.2f;
-		}
-
-		public override bool Update(Dust dust)
-		{
-			//dust.position += dust.velocity;
-			//dust.rotation += dust.velocity.X * 0.15f;
-			//dust.scale *= 0.99f;
-
-			//float light = 0.35f * dust.scale;
-
-			//Lighting.AddLight(dust.position, light, light, light);
-
-			//if (dust.scale < 0.5f)
-			//{
-			//	dust.active = false;
-			//}
-
-			return false; 
-		}
-	}
 }

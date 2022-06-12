@@ -217,9 +217,6 @@ namespace GSMP.Content.Projectiles
                     //checks if last proj is dead or not, if alive does formation stuff. 
                     if (Main.projectile[ParentProjectile.Projectile.whoAmI].active)
                     {
-                        // This doesn't nessissarily need to happen but probobly saves processing large numbers
-                        //if (timer == 360) timer = 0;
-
                         // Getting the amount the projectile should be offset on x and y axis. 
                         // Basically, if this didnt happen the whole formation would spawn to the bottom right of the main projectile
                         int Xoff = 0 - vars[0];
@@ -267,14 +264,14 @@ namespace GSMP.Content.Projectiles
                 }
                 else
                 {
-                    int num9;
-                    num9 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 16, 0f, 0f, 100, Color.White, 2f);
-                    Dust obj;
-                    obj = Main.dust[num9];
-                    obj.velocity *= 0.3f;
-                    Main.dust[num9].position.X = Projectile.Center.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);
-                    Main.dust[num9].position.Y = Projectile.Center.Y + (float)(Projectile.height / 2) + (float)Main.rand.Next(-4, 5);
-                    Main.dust[num9].noGravity = true;
+                    //int num9;
+                    //num9 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 16, 0f, 0f, 100, Color.White, 2f);
+                    //Dust obj;
+                    //obj = Main.dust[num9];
+                    //obj.velocity *= 0.3f;
+                    //Main.dust[num9].position.X = Projectile.Center.X + (float)(Projectile.width / 2) + 4f + (float)Main.rand.Next(-4, 5);
+                    //Main.dust[num9].position.Y = Projectile.Center.Y + (float)(Projectile.height / 2) + (float)Main.rand.Next(-4, 5);
+                    //Main.dust[num9].noGravity = true;
                     // whatever AI the main projectile should have. e.g. homing on cursor
                 }
             }
@@ -300,8 +297,6 @@ namespace GSMP.Content.Projectiles
                         if (fancySpawningTimer % 4 == 0 && requiredProjs > 0)
                         {
                             doFancySpawning();
-                            Main.NewText(requiredProjs.ToString());
-
                         }
                         allLocked = amountUnLocked == 0;
                     }
@@ -326,6 +321,8 @@ namespace GSMP.Content.Projectiles
                 }
                 else
                 {
+                    if (player.channel)
+                        Projectile.timeLeft = stats[4];
                     requiredProjs = ParentProjectile.requiredProjs;
                     if (timer < 360 && requiredProjs < 1 && ParentProjectile.allLocked) timer += 4 * vars[2];
                     else timer = 0;
