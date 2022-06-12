@@ -13,10 +13,16 @@ namespace GSMP.Content.Tiles
 			Main.wallHouse[Type] = true;
 			Main.wallLight[Type] = true;
 			Main.tileLighted[Type] = true;
+			Main.dust[Type] = null;
 
 			AddMapEntry(new Color(0, 150, 0));
 		}
-	}
+
+        public override bool CreateDust(int i, int j, ref int type)
+        {
+            return false;
+        }
+    }
 	public class IndicatorWhite : ModWall
 	{
 		public override string Texture => "GSMP/Assets/Wall_155";
@@ -25,13 +31,14 @@ namespace GSMP.Content.Tiles
 		{
 			Main.wallHouse[Type] = true;
 			Main.wallLight[Type] = true;
+			Main.dust[Type] = null;
 
 			AddMapEntry(new Color(150, 150, 150));
 		}
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            base.ModifyLight(i, j, ref r, ref g, ref b);
-        }
-    }
+		public override bool CreateDust(int i, int j, ref int type)
+		{
+			return false;
+		}
+	}
 }
