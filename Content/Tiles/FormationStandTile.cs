@@ -104,39 +104,45 @@ namespace GSMP.Content.Tiles
             {
 				if ((tile.TileFrameY / 18) == 0)
                 {
-					if ((tile.TileFrameX / 18) == 0)
-					{
-						XSize++;
-						XSize2 += 2;
-						Main.NewText("X size: " + XSize2.ToString());
-					}
-					if ((tile.TileFrameX / 18) == 1 && XSize > 1)
-					{
-						XSize--;
-						XSize2 -= 2;
-						Main.NewText("X size: " + XSize2.ToString());
-					}
-					if ((tile.TileFrameX / 18) == 3)
-					{
-						YSize++;
-						YSize2 += 2;
-						Main.NewText("Y size: " + YSize2.ToString());
-					}
-					if ((tile.TileFrameX / 18) == 4 && YSize > 1)
-					{
-						YSize--;
-						YSize2 -= 2;
-						Main.NewText("Y size: " + YSize2.ToString());
-					}
-					if ((tile.TileFrameX / 18) == 2)
+                    switch ((tile.TileFrameX / 18))
                     {
-						XSize = 1;
-						XSize2 = 5;
-						YSize = 1;
-						YSize2 = 5;
-						Main.NewText("X size: " + XSize2.ToString());
-						Main.NewText("Y size: " + YSize2.ToString());
-					}
+						case 0:
+							XSize++;
+							XSize2 += 2;
+							Main.NewText("X size: " + XSize2.ToString());
+							break;
+						case 1:
+							if (XSize > 1)
+							{
+								XSize--;
+								XSize2 -= 2;
+								Main.NewText("X size: " + XSize2.ToString());
+							}
+							break;
+						case 2:
+							XSize = 1;
+							XSize2 = 5;
+							YSize = 1;
+							YSize2 = 5;
+							Main.NewText("X size: " + XSize2.ToString());
+							Main.NewText("Y size: " + YSize2.ToString());
+							break;
+						case 3:
+							YSize++;
+							YSize2 += 2;
+							Main.NewText("Y size: " + YSize2.ToString());
+							break;
+						case 4:
+							if (YSize > 1)
+							{
+								YSize--;
+								YSize2 -= 2;
+								Main.NewText("Y size: " + YSize2.ToString());
+							}
+							break;
+						default:
+                            break;
+                    }
 				}
 			}
 			return true;

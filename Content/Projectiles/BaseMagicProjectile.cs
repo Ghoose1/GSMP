@@ -13,7 +13,7 @@ namespace GSMP.Content.Projectiles
     {
         public int[] stats = new int[8];
         internal int timer; // Rotation Timer
-        internal int[] vars; // Formation configuration array
+        internal int[] vars; // Formation config
         internal int Xoffset;
         internal int Yoffset;
         internal bool locked;

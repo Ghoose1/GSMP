@@ -7,57 +7,10 @@ using Terraria.ModLoader.IO;
 using Terraria.ID;
 using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
+using GSMP.DataStructures;
 
 namespace GSMP.Content.Items
 {
-    class ArraySerializer : TagSerializer<int[,], TagCompound>
-    {
-        public override TagCompound Serialize(int[,] value)
-        {
-            TagCompound tag = new TagCompound();
-
-            tag["num"] = value.GetLength(0);
-            for (int j = 0; j < value.GetLength(0); j++)
-            {
-                int[] temp = new int[value.GetLength(1)];
-                for (int i = 0; i < temp.Length; i++)
-                {
-                    temp[i] = value[j, i];
-                }
-                tag["Row " + j.ToString()] = temp.ToList();
-            }
-            return tag;
-        }
-
-        public override int[,] Deserialize(TagCompound tag) 
-        {
-            int[,] temp = { { 2 } };
-
-            if (tag.ContainsKey("num") && tag.ContainsKey("Row 0"))
-            {
-                temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length]; // Doesnt assume sqaure
-                int j = 0;
-
-                while (true)
-                {
-                    if (tag.ContainsKey("Row " + j.ToString()))
-                    {
-                        int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
-
-                        for (int i = 0; i < temp.GetLength(1); i++)
-                        {
-                            temp[j, i] = array[i];
-                        }
-                        j++;
-                    }
-                    else break;
-                }
-            }
-
-            return temp;
-        }
-    }
-
     public class BaseMagicItem : ModItem
     {
         public override string Texture => "GSMP/Assets/SpellBookRed";
