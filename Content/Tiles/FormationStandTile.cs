@@ -14,6 +14,7 @@ using Terraria.Localization;
 using Terraria.ObjectData;
 using GSMP.Content.Items;
 using Microsoft.Xna.Framework.Graphics;
+using GSMP.Content.Buffs;
 
 namespace GSMP.Content.Tiles
 {
@@ -41,6 +42,7 @@ namespace GSMP.Content.Tiles
 			ModTranslation name = CreateMapEntryName();
 			name.SetDefault("Formation Stand");
 			AddMapEntry(new Color(200, 200, 200), name);
+			
 			XSize = 1;
 			YSize = 1;
 		}
@@ -161,8 +163,9 @@ namespace GSMP.Content.Tiles
 			if (player.Distance(
 					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
-					< 256 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2))
+					< 256 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2)) // Player is in range to bother rendering the rectangle
 			{
+				player.AddBuff(ModContent.BuffType<PlaceableMagic>(), 1);
 				for (int angle = 0; angle <= 360; angle++)
 					CreateAura((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 							   (j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2),

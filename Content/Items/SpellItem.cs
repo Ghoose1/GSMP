@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using GSMP.DataStructures;
@@ -11,11 +6,11 @@ using Terraria.ID;
 
 namespace GSMP.Content.Items
 {
-    public class SpellAsAnItem : ModItem
+    public class SpellItem : ModItem
     {
         internal Spell spell;
         public override string Texture => "GSMP/Assets/SpellBookGreen";
-        public SpellAsAnItem()
+        public SpellItem()
         {
             Spell S1 = new Spell("Slave"); // Follow spell
             Spell S2 = new Spell("Master"); // Main spell
@@ -35,8 +30,15 @@ namespace GSMP.Content.Items
 
         public override void SetDefaults()
         {
-            Item.CloneDefaults(ItemID.WaterBolt);
+            Item.CloneDefaults(ItemID.DirtBlock);
+            Item.createTile = ModContent.TileType<Tiles.SpellTile>();
         }
+
+        //public override void OnCreate(ItemCreationContext context)
+        //{
+        //    Player player = Main.player[Main.myPlayer];
+        //    player.GetModPlayer<SpellPlayer>().StoredSpells.Add(spell); // Adding this to the player's spell 'inventory'
+        //}
 
         public override void SaveData(TagCompound tag)
         {
