@@ -16,9 +16,10 @@ namespace GSMP.Content.Items
         public override string Texture => "GSMP/Assets/SpellBookRed";
         public override string Name => "Custom Magic Item";
 
-        // Formation variables:
-        private int rotate;
-        public int[,] CustomFormation;
+        // // Formation variables:
+        //private int rotate;
+        //public S[,] CustomFormation;
+        public Spell Castspell;
 
         // Custom Stat arrays
         /// <summary>
@@ -43,22 +44,15 @@ namespace GSMP.Content.Items
         /// 6 - tileCollide (1 = true) |
         /// 7 - formation number (Depreciated) |
         /// </summary>
-        public int[] projStats = new int[8];
+        //public int[] projStats = new int[8];
 
         public BaseMagicItem() { // The default stats so that when a item is created it actually works
             int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
             itemStats = DefaultItemStats;
             int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
-            projStats = DefaultProjStats;
-            int[,] DefaultFormation =
-            {
-                { 1, 1, 1, 1, 1, },
-                { 1, 1, 1, 1, 1, },
-                { 1, 1, 2, 1, 1, },
-                { 1, 1, 1, 1, 1, },
-                { 1, 1, 1, 1, 1, },
-            };
-            CustomFormation = DefaultFormation;
+            Castspell.projStats = DefaultProjStats;
+            Spell[,] DefaultFormation = { { new Spell() } };
+            Castspell.formation = DefaultFormation;
         }
 
         /// <summary>
@@ -85,7 +79,7 @@ namespace GSMP.Content.Items
         /// <param name="item"></param>
         public void UpdateStats(BaseMagicItem item)
         {
-            Item.channel = item.projStats[2] == 3;
+            //Item.channel = item.projStats[2] == 3;
 
             Item.damage = item.itemStats[0];
             Item.crit = item.itemStats[1];
@@ -101,21 +95,18 @@ namespace GSMP.Content.Items
         public override void SaveData(TagCompound tag)
         {
             
-            tag["ProjStats"] = projStats.ToList();
+            tag["Spell"] = Castspell;
             tag["Stats"] = itemStats.ToList();
-            tag["Formation"] = CustomFormation;
+            //tag["Formation"] = CustomFormation;
         }
 
         public override void LoadData(TagCompound tag)
         {
-            if (tag.ContainsKey("ProjStats"))
-                projStats = tag.Get<List<int>>("ProjStats").ToArray();
+            if (tag.ContainsKey("Spell"))
+                Castspell = tag.Get<Spell>("Spell");
 
             if (tag.ContainsKey("Stats"))
                 itemStats = tag.Get<List<int>>("Stats").ToArray();
-
-            if (tag.ContainsKey("Formation"))
-                CustomFormation = tag.Get<int[,]>("Formation");
 
             UpdateStats(this);
         }
@@ -128,16 +119,18 @@ namespace GSMP.Content.Items
 
         public override bool AltFunctionUse(Player player)
         {
-            rotate = rotate == 1 ? -1 : rotate + 1;
-            Main.NewText(rotate < 1 ? rotate == 0 ? "Rotation inactive" : "Rotation AntiClockwise" : "Rotation Clockwise");
+            Castspell.formationRotate = Castspell.formationRotate == 1 ? -1 : Castspell.formationRotate + 1;
+            Main.NewText(Castspell.formationRotate < 1 ? Castspell.formationRotate == 0 ? "Rotation inactive" : "Rotation AntiClockwise" : "Rotation Clockwise");
             return false;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int[] passStats = { 0, 0, rotate };
-            var StatSource = new MagicProjEntitySource(player, projStats, null, passStats, CustomFormation); // AllFormations[projStats[7]]);
-            Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
+            // This is for the projectile's position relative to the main projectile, this can stay for better efficency
+            int[] relativePosition = { 0, 0};  // x position, y position, rotate? (1 = true)
+            // everything is temporarily disabed for refactoring    
+            //var StatSource = new MagicProjEntitySource(player, projStats, null, relativePosition, CustomFormation); // AllFormations[projStats[7]]);
+            //Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
             return false;
         }
 

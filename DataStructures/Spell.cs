@@ -10,51 +10,60 @@ using System.Linq;
 
 namespace GSMP.DataStructures {
 	public struct Spell {
+        // Is this really the only data i need?
 		public int[] projStats;
-		
-		// Formation Stats, in order of accessing
-		public bool usesFormation;
-		public int[,] formation;
+        public string Type;
+
+        // Formation Stats, in order of accessing
+        public bool usesFormation;
+		public Spell[,] formation;
 		public int formationRotate; // 1 = Clockwise, 0 = No Rotation, -1 = AntiClockwise
+
+        public Spell(string Type_ = "Blank")
+        {
+            int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
+            projStats = DefaultProjStats;
+            Type = Type_;   
+
+            usesFormation = false;
+            formation = null;
+            formationRotate = 0;
+        }
 	}
 	
-	public struct SpellMap { // Unused currently cus i dont know how to do that kinda of stuff, I'll ask Yo
-		public Spell[] Array;
-	}
-	
-	class ArraySerializer : TagSerializer<int[,], TagCompound> // TagCompound saving int[,] for Formations
+	class FormationSerializer : TagSerializer<Spell[,], TagCompound> // TagCompound saving Spell[,] for Formations
     {
-        public override TagCompound Serialize(int[,] value)
+        public override TagCompound Serialize(Spell[,] value) // Saves the 2D array as a bunch of 1D arrays for each row
         {
             TagCompound tag = new TagCompound();
 
-            tag["num"] = value.GetLength(0);
+            tag["Length"] = value.GetLength(0);
             for (int j = 0; j < value.GetLength(0); j++)
             {
-                int[] temp = new int[value.GetLength(1)];
+                Spell[] temp = new Spell[value.GetLength(1)];
                 for (int i = 0; i < temp.Length; i++)
                 {
                     temp[i] = value[j, i];
                 }
-                tag["Row " + j.ToString()] = temp.ToList();
+                tag["Row " + j.ToString()] = temp.ToList(); // ToList here beacuse they are easier to read and edit in the files
             }
             return tag;
         }
 
-        public override int[,] Deserialize(TagCompound tag) 
+        public override Spell[,] Deserialize(TagCompound tag) // Does the opposite fo serialise, translates 1D arrays into a 2D array
         {
-            int[,] temp = { { 2 } };
+            Spell[,] temp = { { new Spell() } };
 
-            if (tag.ContainsKey("num") && tag.ContainsKey("Row 0"))
+            if (tag.ContainsKey("Length") && tag.ContainsKey("Row 0"))
             {
-                temp = new int[tag.Get<int>("num"), tag.Get<List<int>>("Row 0").ToArray().Length]; // Doesnt assume sqaure
+                temp = new Spell[tag.Get<int>("Length"), tag.Get<Spell[]>("Row 0").Length]; 
                 int j = 0;
 
                 while (true)
                 {
                     if (tag.ContainsKey("Row " + j.ToString()))
                     {
-                        int[] array = tag.Get<List<int>>("Row " + j.ToString()).ToArray();
+                        Spell[] array = tag.Get<Spell[]>("Row " + j.ToString());
 
                         for (int i = 0; i < temp.GetLength(1); i++)
                         {
@@ -70,14 +79,59 @@ namespace GSMP.DataStructures {
         }
     }
 
-	class SpellSerializer : TagSerializer<Spell, TagCompound> {
+    class SpellArraySerializer : TagSerializer<Spell[], TagCompound> // lmao 3 serializers why am i doing this
+    {
+        public override TagCompound Serialize(Spell[] array)
+        {
+            TagCompound tag = new TagCompound();
+
+            tag["Length"] = array.Length;
+            for (int a = 0; a < array.Length; a++)
+            {
+                tag[a.ToString()] = array[a];
+            }
+            /*
+            for (int j = 0; j < array.GetLength(0); j++)
+            {
+                int[] temp = new int[array.GetLength(1)];
+                for (int i = 0; i < temp.Length; i++)
+                {
+                    temp[i] = array[j, i];
+                }
+                tag["Row " + j.ToString()] = temp.ToList(); // ToList here beacuse they are easier to read and edit in the files
+            }*/
+
+            return tag;
+        }
+
+        public override Spell[] Deserialize(TagCompound tag)
+        {
+            Spell[] array = { new Spell() };
+
+            if (tag.ContainsKey("Length") && tag.ContainsKey("0"))
+            {
+                int a = 0;
+                while (true)
+                {
+                    if (tag.ContainsKey(a.ToString())) array[a] = tag.Get<Spell>(a.ToString());
+                    else break;
+                    a++;
+                }
+            }
+
+            return array;
+        }
+    }
+
+    class SpellSerializer : TagSerializer<Spell, TagCompound> { // Saving spells for use in BaseMagicItem
 		public override TagCompound Serialize(Spell spell) {
 			TagCompound tag = new TagCompound();
-			
+
+            tag["Type"] = spell.Type;
 			tag["projStats"] = spell.projStats.ToList();
 			
 			tag["usesFormation"] = spell.usesFormation;
-			tag["formation"] = spell.formation;
+			if (spell.usesFormation) tag["formation"] = spell.formation;
 			tag["formationRotate"] = spell.formationRotate;
 			
 			return tag;
@@ -85,11 +139,12 @@ namespace GSMP.DataStructures {
 		
 		public override Spell Deserialize(TagCompound tag) {
 			Spell spell = new Spell();
-			
+
+            if (tag.ContainsKey("Type")) spell.Type = tag.Get<string>("Type");
 			if (tag.ContainsKey("projStats")) spell.projStats = tag.Get<List<int>>("projStats").ToArray();
 			
 			if (tag.ContainsKey("usesFormation")) spell.usesFormation = tag.Get<bool>("usesFormation");
-			if (tag.ContainsKey("formation")) spell.formation = tag.Get<int[,]>("formation");
+			if (tag.ContainsKey("formation") && tag.Get<bool>("usesFormation")) spell.formation = tag.Get<Spell[,]>("formation");
 			if (tag.ContainsKey("formationRotate")) spell.formationRotate = tag.Get<int>("formationRotate");
 			
 			return spell;

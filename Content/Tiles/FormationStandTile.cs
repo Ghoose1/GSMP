@@ -95,8 +95,8 @@ namespace GSMP.Content.Tiles
 							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[YSize2 - 1 - searchY, searchX] != 2) Formation[YSize2 - 1 - searchY, searchX] = 1; // MultiType will require this to be changed
 						}
 					}
-
-					item.CustomFormation = Formation;
+					// temporarily Disabled for refactoring
+					// item.Castspell.formation = Formation;
 				}
 				else Main.NewText("No Origin Tile");
 			}

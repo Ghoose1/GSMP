@@ -1,7 +1,7 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 using GSMP.Content.Items;
-
+/* Temporarily removed
 namespace GSMP.Commands
 {
     public class ItemCommand : ModCommand
@@ -39,3 +39,4 @@ namespace GSMP.Commands
 		}
 	}
 }
+*/

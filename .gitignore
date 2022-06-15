@@ -57,3 +57,5 @@ bin/Debug/net6.0/tModLoader.pdb
 bin/Debug/net6.0/tModLoader.dll
 .vs/GSMP/v17/.futdcache.v1
 icon.pdn
+DataStructures/new 1.cs
+DataStructures/BaseMagicItem.cs

@@ -6,23 +6,30 @@ using Microsoft.Xna.Framework;
 using GSMP;
 using System.Collections.Generic;
 using System.Linq;
+using GSMP.DataStructures;
 
 namespace GSMP.Content.Projectiles
 {
     public class BaseMagicProjectile : ModProjectile
     {
+        internal Spell spell;
+
+        // Replaced by spell: (The only internal variables should be ones that change with the projectile over time
         public int[] stats = new int[8];
         internal int timer; // Rotation Timer
-        internal int[] vars; // Formation config
-        internal int Xoffset;
-        internal int Yoffset;
-        internal bool locked;
-        internal float baseVelo; 
+        internal int[] vars; // Formation config // Fr wtf is this lmao
         internal int CustomAIStyle;
         internal int[,] formTemplate;
+
+        // Why are these here, should be local things iirc
+        internal int Xoffset; 
+        internal int Yoffset; 
+        internal bool locked;
+        internal float baseVelo;
         internal double diagDist;
         internal float parentVelocity;
 
+        // Fancy Spawning stuff
         internal int fancySpawningTimer;
         internal int fancySpawningX;
         internal int fancySpawningY;
@@ -54,7 +61,7 @@ namespace GSMP.Content.Projectiles
                 Projectile.timeLeft = stats[4];
                 Projectile.ignoreWater = stats[5] == 1;
                 Projectile.tileCollide = stats[6] == 1;
-                if (CustomAIStyle == 1 || CustomAIStyle == 2) // Projectile is using a formation 
+                if (CustomAIStyle == 1 || CustomAIStyle == 2) // Projectile is using a formation // Instead indicated by spell.usesFormation
                 {
                     // When projectile is a main projectile, it initalises the other projectiles in the formation
                     if (Projectile.ai[0] == 0)
@@ -169,7 +176,7 @@ namespace GSMP.Content.Projectiles
                     Projectile.tileCollide = false;
                     requiredProjs = SumOfForm(Source.Form)[1]; // Currently we only care about projectile type 1 (default)
                     amountUnLocked = requiredProjs;
-                    if (Projectile.owner == Main.myPlayer) 
+                    if (Projectile.owner == Main.myPlayer)
                     {
                         if (Projectile.ai[0] == 0)
                         {
@@ -279,9 +286,9 @@ namespace GSMP.Content.Projectiles
             {
                 Player player = Main.player[Projectile.owner];
 
-                
+
                 //Projectile.velocity.X *= 0.1f;
-                    
+
                 //Projectile.velocity.Y *= 0.1f;
 
                 if (Projectile.ai[0] == 0)
@@ -337,9 +344,9 @@ namespace GSMP.Content.Projectiles
 
                         Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist),
                                                       (float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist));
-                        
+
                         //float parentvelocity = (float)Math.Sqrt(Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.X, 2) + Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.Y, 2));
-                        
+
                         if (!locked)
                         {
                             baseVelo = baseVelo >= Projectile.Center.Distance(vector2) ? Projectile.Center.Distance(vector2) : baseVelo * 1.1f; //(float)Math.Pow(baseVelo, 1.1);
@@ -357,7 +364,7 @@ namespace GSMP.Content.Projectiles
                     }
                     else
                     {
-                        
+
                     }
                 }
             }
@@ -375,28 +382,17 @@ namespace GSMP.Content.Projectiles
                     Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
 
                 requiredProjs--;
-                // 1, 1, 1, 0, 1, 
-                // 0, 0, 1, 0, 1, 
-                // 1, 1, 2, 1, 1, 
-                // 1, 0, 1, 0, 0, 
-                // 1, 0, 1, 1, 1, 
 
-                // 6  5  4  5  6 
-                // 5  3  2  3  5 
-                // 4  2  1  2  4
-                // 5  3  2  3  5 
-                // 6  5  4  5  6 
-                
-                if (fancySpawningX < formTemplate.GetLength(1)-1) fancySpawningX++;
+                if (fancySpawningX < formTemplate.GetLength(1) - 1) fancySpawningX++;
                 else
                 {
                     fancySpawningX = 0;
-                    if (fancySpawningY < formTemplate.GetLength(0)-1) fancySpawningY++;
+                    if (fancySpawningY < formTemplate.GetLength(0) - 1) fancySpawningY++;
                 }
             }
             else
             {
-                if (fancySpawningX < formTemplate.GetLength(1)-1)
+                if (fancySpawningX < formTemplate.GetLength(1) - 1)
                 {
                     fancySpawningX++;
                     doFancySpawning();
@@ -404,7 +400,7 @@ namespace GSMP.Content.Projectiles
                 else
                 {
                     fancySpawningX = 0;
-                    if (fancySpawningY < formTemplate.GetLength(0)-1)
+                    if (fancySpawningY < formTemplate.GetLength(0) - 1)
                     {
                         fancySpawningY++;
                         doFancySpawning();
@@ -412,8 +408,8 @@ namespace GSMP.Content.Projectiles
                 }
             }
         }
-        
-        internal int[] SumOfForm(int[,] Array)
+
+        internal int[] SumOfForm(int[,] Array) // Needs to be updated for form being a spell array not an int array
         {
             List<int> totalList = new List<int> { 0 };
             int[] total = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // all the types of projectiles, i couldnt get this to work with lists
@@ -475,12 +471,26 @@ namespace GSMP.Content.Projectiles
         public BaseMagicProjectile proj;
         public int[] FormStats;
         public int[,] Form;
-        public MagicProjEntitySource(Entity entity, int[] Stats2, BaseMagicProjectile proj2, int[] FormStats2, int[,] Form2, string context = null) : base(entity, context)
+
+        public MagicProjEntitySource(Entity entity, int[] Stats2, BaseMagicProjectile proj2, int[] FormStats2, int[,] Form2,string context = null) : base(entity, context)
         {
             Stats = Stats2;
             proj = proj2;
             FormStats = FormStats2;
             Form = Form2;
+        }
+    }
+
+    public class SpellEntitySource : EntitySource_Parent // More efficent now as it support the spell data system. Essentially, spells hold the data previoulsy on items and projectiles
+    {
+        public BaseMagicProjectile proj;
+        public Spell CastSpell;
+        public int[] relativeFormPosition;
+        public SpellEntitySource(Entity entity, Spell CastSpell_, BaseMagicProjectile proj_ = null, int[] relativeFormPosition_ = null, string context = null) : base(entity, context)
+        {
+            CastSpell = CastSpell_;
+            proj = proj_;
+            relativeFormPosition = relativeFormPosition_;
         }
     }
 }
