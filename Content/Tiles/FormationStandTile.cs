@@ -160,22 +160,22 @@ namespace GSMP.Content.Tiles
 			int YSize2 = 3 + (2 * YSize);
 			Vector2 tilepos = new Vector2(X * 16, Y * 16);
 
-			if (player.Distance(
+			if (player.DistanceSQ(
 					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
-					< 256 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2)) // Player is in range to bother rendering the rectangle
+					< 65535 + 256 * Math.Pow(XSize2 > YSize2 ? XSize2 : YSize2, 2)) // Player is in range to bother rendering the rectangle
 			{
-				player.AddBuff(ModContent.BuffType<PlaceableMagic>(), 1);
 				for (int angle = 0; angle <= 360; angle++)
 					CreateAura((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 							   (j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2),
 							   128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2), angle);
 
-				if (player.Distance(
+				if (player.DistanceSQ(
 					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
-					< 128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2))
+					< 32768 + 256 * Math.Pow(XSize2 > YSize2 ? XSize2 : YSize2, 2))
 				{
+					player.AddBuff(ModContent.BuffType<PlaceableMagic>(), 10);
 					Vector2 pos;
 					int dust;
 					int X2 = (X * 16) + 4; // Middle of blocks instead of top-right corners
