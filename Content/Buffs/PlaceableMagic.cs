@@ -15,7 +15,7 @@ namespace GSMP.Content.Buffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            //player.GetModPlayer<SpellPlayer>().canPlaceSpells = true;
+            player.GetModPlayer<SpellPlayer>().canPlaceSpells = true;
         }
     }
 }

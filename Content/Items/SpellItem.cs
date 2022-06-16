@@ -34,11 +34,10 @@ namespace GSMP.Content.Items
             Item.createTile = ModContent.TileType<Tiles.SpellTile>();
         }
 
-        //public override void OnCreate(ItemCreationContext context)
-        //{
-        //    Player player = Main.player[Main.myPlayer];
-        //    player.GetModPlayer<SpellPlayer>().StoredSpells.Add(spell); // Adding this to the player's spell 'inventory'
-        //}
+        public override bool CanUseItem(Player player)
+        {
+            return player.GetModPlayer<SpellPlayer>().canPlaceSpells;
+        }
 
         public override void SaveData(TagCompound tag)
         {

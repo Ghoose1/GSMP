@@ -1,11 +1,9 @@
 ﻿using GSMP.DataStructures;
 using System.Collections.Generic;
 using Terraria.ModLoader;
-using GSMP.Content.Tiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader.IO;
-using System.Linq;
 
 namespace GSMP
 {
@@ -13,42 +11,29 @@ namespace GSMP
     {
         public List<Spell> StoredSpells;
         public bool canPlaceSpells;
-        public List<int> TestList;
 
         public override void Initialize()
         {
             StoredSpells = new List<Spell>();
         }
-        //public Spell TestSave;
-
-        //public SpellPlayer() 
-        //{
-        //    TestSave = new Spell("SavePls");
-        //}
 
         public override void ResetEffects()
         {
             canPlaceSpells = false;
-
-            //TestSave = new Spell("Debug");
-            //StoredSpells[0] = TestSave;
         }
 
         public override void SaveData(TagCompound tag)
         {
-            //Spell[] SaveThing = StoredSpells.ToArray();
-            tag["SpellList"] = StoredSpells;  // WHy tf deos this not work
-            //tag["Test"] = TestSave;
+            tag["SpellList"] = StoredSpells;
         }
 
         public override void LoadData(TagCompound tag)
         {
-            //if (tag.ContainsKey("SpellList")) StoredSpells = tag.Get<List<Spell>>("SpellList");
             if (tag.ContainsKey("SpellList")) StoredSpells = tag.Get<List<Spell>>("SpellList");
         }
     }
 
-    public class SpellCommand : ModCommand // This was just for testing adding spells to the player's inventory
+    public class SpellCommand : ModCommand // This is just for testing adding spells to the player's inventory
     {
         public override CommandType Type => CommandType.Chat;
 
