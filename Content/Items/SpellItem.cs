@@ -47,7 +47,7 @@ namespace GSMP.Content.Items
 
         public override void LoadData(TagCompound tag)
         {
-            if (tag.ContainsKey("Spell")) spell = tag.Get<Spell>("Spell"); 
+            if (tag.ContainsKey("Spell")) spell = tag.Get<Spell>("Spell");
         }
     }
 }

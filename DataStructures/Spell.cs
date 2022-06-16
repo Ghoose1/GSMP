@@ -56,14 +56,14 @@ namespace GSMP.DataStructures {
 
             if (tag.ContainsKey("Length") && tag.ContainsKey("Row 0"))
             {
-                temp = new Spell[tag.Get<int>("Length"), tag.Get<Spell[]>("Row 0").Length]; 
+                temp = new Spell[tag.Get<int>("Length"), tag.Get<List<Spell>>("Row 0").Count]; 
                 int j = 0;
 
                 while (true)
                 {
                     if (tag.ContainsKey("Row " + j.ToString()))
                     {
-                        Spell[] array = tag.Get<Spell[]>("Row " + j.ToString());
+                        Spell[] array = tag.Get<List<Spell>>("Row " + j.ToString()).ToArray();
 
                         for (int i = 0; i < temp.GetLength(1); i++)
                         {
@@ -79,49 +79,39 @@ namespace GSMP.DataStructures {
         }
     }
 
-    class SpellArraySerializer : TagSerializer<Spell[], TagCompound> // lmao 3 serializers why am i doing this
-    {
-        public override TagCompound Serialize(Spell[] array)
-        {
-            TagCompound tag = new TagCompound();
+    //class SpellArraySerializer : TagSerializer<Spell[], TagCompound> // lmao 3 serializers why am i doing this
+    //{
+    //    public override TagCompound Serialize(Spell[] array)
+    //    {
+    //        TagCompound tag = new TagCompound();
 
-            tag["Length"] = array.Length;
-            for (int a = 0; a < array.Length; a++)
-            {
-                tag[a.ToString()] = array[a];
-            }
-            /*
-            for (int j = 0; j < array.GetLength(0); j++)
-            {
-                int[] temp = new int[array.GetLength(1)];
-                for (int i = 0; i < temp.Length; i++)
-                {
-                    temp[i] = array[j, i];
-                }
-                tag["Row " + j.ToString()] = temp.ToList(); // ToList here beacuse they are easier to read and edit in the files
-            }*/
+    //        tag["Length"] = array.Length;
+    //        for (int a = 0; a < array.Length; a++)
+    //        {
+    //            tag[a.ToString()] = array[a];
+    //        }
 
-            return tag;
-        }
+    //        return tag;
+    //    }
 
-        public override Spell[] Deserialize(TagCompound tag)
-        {
-            Spell[] array = { new Spell() };
+    //    public override Spell[] Deserialize(TagCompound tag)
+    //    {
+    //        Spell[] array = { new Spell() };
 
-            if (tag.ContainsKey("Length") && tag.ContainsKey("0"))
-            {
-                int a = 0;
-                while (true)
-                {
-                    if (tag.ContainsKey(a.ToString())) array[a] = tag.Get<Spell>(a.ToString());
-                    else break;
-                    a++;
-                }
-            }
+    //        if (tag.ContainsKey("Length") && tag.ContainsKey("0"))
+    //        {
+    //            int a = 0;
+    //            while (true)
+    //            {
+    //                if (tag.ContainsKey(a.ToString())) array[a] = tag.Get<Spell>(a.ToString());
+    //                else break;
+    //                a++;
+    //            }
+    //        }
 
-            return array;
-        }
-    }
+    //        return array;
+    //    }
+    //}
 
     class SpellSerializer : TagSerializer<Spell, TagCompound> { // Saving spells for use in BaseMagicItem
 		public override TagCompound Serialize(Spell spell) {
