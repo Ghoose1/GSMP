@@ -15,16 +15,18 @@ namespace GSMP.DataStructures {
         public string Type;
 
         // Formation Stats, in order of accessing
+        public bool isFormationSlave; // So as to not have infinite loops of formations
         public bool usesFormation;
 		public Spell[,] formation;
 		public int formationRotate; // 1 = Clockwise, 0 = No Rotation, -1 = AntiClockwise
 
-        public Spell(string Type_ = "Blank")
+        public Spell(string Type_ = "Blank", bool isFormationSlave_ = false)
         {
             int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
             projStats = DefaultProjStats;
-            Type = Type_;   
+            Type = Type_;
 
+            isFormationSlave = isFormationSlave_;
             usesFormation = false;
             formation = null;
             formationRotate = 0;
@@ -79,49 +81,17 @@ namespace GSMP.DataStructures {
         }
     }
 
-    //class SpellArraySerializer : TagSerializer<Spell[], TagCompound> // lmao 3 serializers why am i doing this
-    //{
-    //    public override TagCompound Serialize(Spell[] array)
-    //    {
-    //        TagCompound tag = new TagCompound();
-
-    //        tag["Length"] = array.Length;
-    //        for (int a = 0; a < array.Length; a++)
-    //        {
-    //            tag[a.ToString()] = array[a];
-    //        }
-
-    //        return tag;
-    //    }
-
-    //    public override Spell[] Deserialize(TagCompound tag)
-    //    {
-    //        Spell[] array = { new Spell() };
-
-    //        if (tag.ContainsKey("Length") && tag.ContainsKey("0"))
-    //        {
-    //            int a = 0;
-    //            while (true)
-    //            {
-    //                if (tag.ContainsKey(a.ToString())) array[a] = tag.Get<Spell>(a.ToString());
-    //                else break;
-    //                a++;
-    //            }
-    //        }
-
-    //        return array;
-    //    }
-    //}
-
     class SpellSerializer : TagSerializer<Spell, TagCompound> { // Saving spells for use in BaseMagicItem
 		public override TagCompound Serialize(Spell spell) {
 			TagCompound tag = new TagCompound();
 
             tag["Type"] = spell.Type;
 			tag["projStats"] = spell.projStats.ToList();
-			
+
+            tag["isFormationSlave"] = spell.isFormationSlave;
 			tag["usesFormation"] = spell.usesFormation;
-			if (spell.usesFormation) tag["formation"] = spell.formation;
+            // These could be both true, so this makes sure that there isnt infinite formation saving
+			if (spell.usesFormation && !spell.isFormationSlave) tag["formation"] = spell.formation;
 			tag["formationRotate"] = spell.formationRotate;
 			
 			return tag;
@@ -132,8 +102,9 @@ namespace GSMP.DataStructures {
 
             if (tag.ContainsKey("Type")) spell.Type = tag.Get<string>("Type");
 			if (tag.ContainsKey("projStats")) spell.projStats = tag.Get<List<int>>("projStats").ToArray();
-			
-			if (tag.ContainsKey("usesFormation")) spell.usesFormation = tag.Get<bool>("usesFormation");
+
+            if (tag.ContainsKey("isFormationSlave")) spell.isFormationSlave = tag.Get<bool>("isFormationSlave");
+            if (tag.ContainsKey("usesFormation")) spell.usesFormation = tag.Get<bool>("usesFormation");
 			if (tag.ContainsKey("formation") && tag.Get<bool>("usesFormation")) spell.formation = tag.Get<Spell[,]>("formation");
 			if (tag.ContainsKey("formationRotate")) spell.formationRotate = tag.Get<int>("formationRotate");
 			

@@ -51,30 +51,30 @@ namespace GSMP.Content.Projectiles
 
         public override void OnSpawn(IEntitySource source)
         {
-            if (source is MagicProjEntitySource Source)
+            if (source is SpellEntitySource Source)
             {
-                vars = Source.FormStats;
-                stats = Source.Stats;
-                formTemplate = Source.Form;
-                CustomAIStyle = stats[2];
-                Projectile.maxPenetrate = stats[3];
-                Projectile.timeLeft = stats[4];
-                Projectile.ignoreWater = stats[5] == 1;
-                Projectile.tileCollide = stats[6] == 1;
+                vars = Source.relativeFormPosition;
+                spell = Source.CastSpell;
+                //formTemplate = Source.Form;
+                CustomAIStyle = spell.projStats[2];
+                Projectile.maxPenetrate = spell.projStats[3];
+                Projectile.timeLeft = spell.projStats[4];
+                Projectile.ignoreWater = spell.projStats[5] == 1;
+                Projectile.tileCollide = spell.projStats[6] == 1;
                 if (CustomAIStyle == 1 || CustomAIStyle == 2) // Projectile is using a formation // Instead indicated by spell.usesFormation
                 {
                     // When projectile is a main projectile, it initalises the other projectiles in the formation
-                    if (Projectile.ai[0] == 0)
+                    if (!spell.isFormationSlave)
                     {
                         ParentProjectile = null;
                         Projectile.tileCollide = false;
 
                         // find Parent Proj point in formation
-                        for (int i = 0; i < Source.Form.GetLength(1); i++)
+                        for (int i = 0; i < spell.formation.GetLength(1); i++)
                         {
-                            for (int j = 0; j < Source.Form.GetLength(0); j++)
+                            for (int j = 0; j < spell.formation.GetLength(0); j++)
                             {
-                                if (Source.Form[j, i] == 2)
+                                if (!spell.formation[j, i].isFormationSlave)
                                 {
                                     Xoffset = i;
                                     Yoffset = j;
@@ -84,17 +84,18 @@ namespace GSMP.Content.Projectiles
                         }
 
                         // Create a bunch of projectiles for the rest of the formation
-                        for (int x = 0; x < Source.Form.GetLength(1); x++)
+                        for (int x = 0; x < spell.formation.GetLength(1); x++)
                         {
-                            for (int y = 0; y < Source.Form.GetLength(0); y++)
+                            for (int y = 0; y < spell.formation.GetLength(0); y++)
                             {
-                                if (Source.Form[y, x] == 1)
+                                if (spell.formation[y, x].Type != null) // Checking if position in formation !blank, could add a Type string for blank if needed
                                 {
                                     // x position, y position, rotate? (1 = true)
-                                    int[] passStats = { x - Xoffset, y - Yoffset, vars[2] };
-                                    // player (required), BMI stats, This Projectile, Formation Stats, Formation
-                                    var SpawnSource = new MagicProjEntitySource(Main.player[Projectile.owner], Source.Stats, this, passStats, Source.Form);
-                                    Projectile.NewProjectile(SpawnSource, Main.player[Projectile.owner].position,
+                                    int[] posStats = { x - Xoffset, y - Yoffset};
+                                    // player (required), BMI stats, This Projectile, Formation offsets, Formation
+                                    var Source_ = new SpellEntitySource(Main.player[Projectile.owner], spell.formation[y, x], this, posStats);
+                                    //var SpawnSource = new MagicProjEntitySource(Main.player[Projectile.owner], Source.Stats, this, passStats, Source.Form);
+                                    Projectile.NewProjectile(Source_, Main.player[Projectile.owner].position,
                                         Projectile.velocity, ModContent.ProjectileType<BaseMagicProjectile>(),
                                         Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
                                 }
@@ -174,21 +175,21 @@ namespace GSMP.Content.Projectiles
                     fancySpawningTimer = 0;
                     ParentProjectile = null;
                     Projectile.tileCollide = false;
-                    requiredProjs = SumOfForm(Source.Form)[1]; // Currently we only care about projectile type 1 (default)
-                    amountUnLocked = requiredProjs;
+                    requiredProjs = SumOfForm(spell.formation); // Total # of projectiles in formation
+                    amountUnLocked = requiredProjs; // amountUnLocked is the amount of projectiles not in the formation
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        if (Projectile.ai[0] == 0)
+                        if (spell.isFormationSlave)
                         {
                             if (Main.player[Projectile.owner].channel) follow = true;
                             ParentProjectile = null;
 
-                            // find Parent Proj point in formation
-                            for (int i = 0; i < Source.Form.GetLength(1); i++)
+                            // find this projectile's spell's point in formation, then get required offsets for spawning others
+                            for (int i = 0; i < spell.formation.GetLength(1); i++)
                             {
-                                for (int j = 0; j < Source.Form.GetLength(0); j++)
+                                for (int j = 0; j < spell.formation.GetLength(0); j++)
                                 {
-                                    if (Source.Form[j, i] == 2)
+                                    if (!spell.formation[j, i].isFormationSlave)
                                     {
                                         Xoffset = i;
                                         Yoffset = j;
@@ -196,6 +197,7 @@ namespace GSMP.Content.Projectiles
                                     }
                                 }
                             }
+                            // For this CustomAIStyle, the spawning of slave projectiles is done in AI()
                         }
                         else
                         {
@@ -213,7 +215,7 @@ namespace GSMP.Content.Projectiles
             }
         }
 
-        public override void AI()
+        public override void AI() // This somehow needed no fixing with using Spell
         {
             if (stats[2] == 1 || stats[2] == 2)
             {
@@ -375,8 +377,8 @@ namespace GSMP.Content.Projectiles
         {
             if (formTemplate[fancySpawningY, fancySpawningX] == 1) // == projectile type
             {
-                int[] passStats = { fancySpawningX - Xoffset, fancySpawningY - Yoffset, vars[2] };
-                var SpawnSource = new MagicProjEntitySource(Main.player[Projectile.owner], stats, this, passStats, formTemplate);
+                int[] posStats = { fancySpawningX - Xoffset, fancySpawningY - Yoffset };
+                var SpawnSource = new SpellEntitySource(Main.player[Projectile.owner], spell, this, posStats);
                 Projectile.NewProjectile(SpawnSource, Main.player[Projectile.owner].position,
                     Projectile.velocity, ModContent.ProjectileType<BaseMagicProjectile>(),
                     Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
@@ -409,17 +411,19 @@ namespace GSMP.Content.Projectiles
             }
         }
 
-        internal int[] SumOfForm(int[,] Array) // Needs to be updated for form being a spell array not an int array
+        internal int SumOfForm(Spell[,] Array) // Needs testing, idk if just an int will work
         {
-            List<int> totalList = new List<int> { 0 };
-            int[] total = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // all the types of projectiles, i couldnt get this to work with lists
+            //List<int> totalList = new List<int> { 0 };
+            //int[] total = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // all the types of projectiles, i couldnt get this to work with lists
+            int total = 0;
             for (int i = 0; i < Array.GetLength(1); i++)
             {
                 for (int j = 0; j < Array.GetLength(0); j++)
                 {
-                    if (Array[j, i] != 0 && Array[j, i] != 2) // 0 is no proj, 2 is main proj, >2 is differnet projs.
+                    if (Array[j, i].Type != null && Array[j, i].isFormationSlave) // 0 is no proj, 2 is main proj, >2 is differnet projs.
                     {
-                        total[Array[j, i]] += 1;
+                        //total[Array[j, i]] += 1;
+                        total++;
                     }
                 }
             }
@@ -465,21 +469,22 @@ namespace GSMP.Content.Projectiles
             return closestNPC;
         }
     }
-    public class MagicProjEntitySource : EntitySource_Parent
-    {
-        public int[] Stats;
-        public BaseMagicProjectile proj;
-        public int[] FormStats;
-        public int[,] Form;
+    //public class MagicProjEntitySource : EntitySource_Parent
+    //{
+    //    public int[] Stats;
+    //    public BaseMagicProjectile proj;
+    //    public int[] FormStats;
+    //    public int[,] Form;
 
-        public MagicProjEntitySource(Entity entity, int[] Stats2, BaseMagicProjectile proj2, int[] FormStats2, int[,] Form2,string context = null) : base(entity, context)
-        {
-            Stats = Stats2;
-            proj = proj2;
-            FormStats = FormStats2;
-            Form = Form2;
-        }
-    }
+    //    //                           player         item Stats    Parent Projectile          x, y offset for slaves
+    //    public MagicProjEntitySource(Entity entity, int[] Stats2, BaseMagicProjectile proj2, int[] FormStats2, int[,] Form2,string context = null) : base(entity, context)
+    //    {
+    //        Stats = Stats2;
+    //        proj = proj2;
+    //        FormStats = FormStats2;
+    //        Form = Form2;
+    //    }
+    //}
 
     public class SpellEntitySource : EntitySource_Parent // More efficent now as it support the spell data system. Essentially, spells hold the data previoulsy on items and projectiles
     {

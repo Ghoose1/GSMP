@@ -11,6 +11,7 @@ namespace GSMP
     {
         public List<Spell> StoredSpells;
         public bool canPlaceSpells;
+        public bool debug;
 
         public override void Initialize()
         {
@@ -73,6 +74,18 @@ namespace GSMP
                         break;
                     }
             }
+        }
+    }
+
+    public class DebugMode : ModCommand
+    {
+        public override CommandType Type => CommandType.Chat;
+        public override string Command => "d";
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            SpellPlayer player = caller.Player.GetModPlayer<SpellPlayer>();
+            player.debug = !player.debug;
+            Main.NewText("Debug mode " + (player.debug ? "On" : "Off"));
         }
     }
 }

@@ -49,9 +49,8 @@ namespace GSMP.Content.Items
         public BaseMagicItem() { // The default stats so that when a item is created it actually works
             int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
             itemStats = DefaultItemStats;
-            int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
-            Castspell.projStats = DefaultProjStats;
-            Spell[,] DefaultFormation = { { new Spell() } };
+            Castspell = new Spell("Item");
+            Spell[,] DefaultFormation = { { Castspell } };
             Castspell.formation = DefaultFormation;
         }
 
@@ -79,7 +78,7 @@ namespace GSMP.Content.Items
         /// <param name="item"></param>
         public void UpdateStats(BaseMagicItem item)
         {
-            //Item.channel = item.projStats[2] == 3;
+            Item.channel = item.Castspell.projStats[2] == 3;
 
             Item.damage = item.itemStats[0];
             Item.crit = item.itemStats[1];
@@ -127,7 +126,7 @@ namespace GSMP.Content.Items
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // This is for the projectile's position relative to the main projectile, this can stay for better efficency
-            int[] relativePosition = { 0, 0};  // x position, y position, rotate? (1 = true)
+            //int[] relativePosition = { 0, 0};  // x position, y position relative to the initialising proj, not needed here
             // everything is temporarily disabed for refactoring    
             //var StatSource = new MagicProjEntitySource(player, projStats, null, relativePosition, CustomFormation); // AllFormations[projStats[7]]);
             //Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);

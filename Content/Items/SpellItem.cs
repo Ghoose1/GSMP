@@ -12,20 +12,21 @@ namespace GSMP.Content.Items
         public override string Texture => "GSMP/Assets/SpellBookGreen";
         public SpellItem()
         {
-            Spell S1 = new Spell("Slave"); // Follow spell
-            Spell S2 = new Spell("Master"); // Main spell
+            spell = new Spell("Default", false);
+            spell.formationRotate = 0;
+            spell.usesFormation = true;
+            int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
+            spell.projStats = DefaultProjStats;
 
-            Spell[,] DefaultFormation = { 
+            Spell S1 = new Spell("Slave", true); // Follow spell
+            Spell S2 = spell; // Main spell
+
+            Spell[,] DefaultFormation = { // This is how formations will now be
                 { S1, S1, S1 },
                 { S1, S2, S1 },
                 { S1, S1, S1 },
             };
             spell.formation = DefaultFormation;
-            spell.formationRotate = 0;
-            spell.usesFormation = true;
-            spell.Type = "Debug";
-            int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
-            spell.projStats = DefaultProjStats;
         }
 
         public override void SetDefaults()
@@ -37,6 +38,12 @@ namespace GSMP.Content.Items
         public override bool CanUseItem(Player player)
         {
             return player.GetModPlayer<SpellPlayer>().canPlaceSpells;
+        }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            if (player.GetModPlayer<SpellPlayer>().debug) Main.NewText(spell.Type);
+            return player.GetModPlayer<SpellPlayer>().debug;
         }
 
         public override void SaveData(TagCompound tag)
