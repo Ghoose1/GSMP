@@ -64,12 +64,13 @@ namespace GSMP.Content.Projectiles
                 if (CustomAIStyle == 1 || CustomAIStyle == 2) // Projectile is using a formation // Instead indicated by spell.usesFormation
                 {
                     // When projectile is a main projectile, it initalises the other projectiles in the formation
-                    if (!spell.isFormationSlave)
+                    if (!spell.isFormationSlave && spell.usesFormation)
                     {
                         ParentProjectile = null;
                         Projectile.tileCollide = false;
 
                         // find Parent Proj point in formation
+                        //spell.formation = new Spell[,] { { new Spell("null") } }; // testing
                         for (int i = 0; i < spell.formation.GetLength(1); i++)
                         {
                             for (int j = 0; j < spell.formation.GetLength(0); j++)
@@ -179,7 +180,7 @@ namespace GSMP.Content.Projectiles
                     amountUnLocked = requiredProjs; // amountUnLocked is the amount of projectiles not in the formation
                     if (Projectile.owner == Main.myPlayer)
                     {
-                        if (spell.isFormationSlave)
+                        if (spell.isFormationSlave && spell.usesFormation)
                         {
                             if (Main.player[Projectile.owner].channel) follow = true;
                             ParentProjectile = null;

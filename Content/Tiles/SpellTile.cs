@@ -12,7 +12,7 @@ namespace GSMP.Content.Tiles
     public class SpellTile : ModTile
     {
         public override string Texture => "GSMP/Assets/ExampleBlock";
-        public Spell spell;
+        internal Spell spell;
 
         public override void SetStaticDefaults()
 		{

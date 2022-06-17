@@ -3,6 +3,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using GSMP.DataStructures;
 using Terraria.ID;
+using System.Collections.Generic;
 
 namespace GSMP.Content.Items
 {
@@ -32,7 +33,7 @@ namespace GSMP.Content.Items
         public override void SetDefaults()
         {
             Item.CloneDefaults(ItemID.DirtBlock);
-            Item.createTile = ModContent.TileType<Tiles.SpellTile>();
+            Item.maxStack = 1;
         }
 
         public override bool CanUseItem(Player player)
@@ -46,6 +47,14 @@ namespace GSMP.Content.Items
             return player.GetModPlayer<SpellPlayer>().debug;
         }
 
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            TooltipLine tooltipLine = new TooltipLine(Mod, "GSMP", "Type " + spell.Type);
+            tooltips.Add(tooltipLine);
+            tooltipLine = new TooltipLine(Mod, "GSMP", "IsSlave " + spell.isFormationSlave); 
+            tooltips.Add(tooltipLine);
+        }
+
         public override void SaveData(TagCompound tag)
         {
             tag["Spell"] = spell;
@@ -54,6 +63,17 @@ namespace GSMP.Content.Items
         public override void LoadData(TagCompound tag)
         {
             if (tag.ContainsKey("Spell")) spell = tag.Get<Spell>("Spell");
+        }
+    }
+
+    public class Test : ModCommand
+    {
+        public override string Command => "e";
+        public override CommandType Type => CommandType.Chat;
+        public override void Action(CommandCaller caller, string input, string[] args)
+        {
+            if (caller.Player.HeldItem.ModItem is SpellItem item)
+                item.spell.isFormationSlave = !item.spell.isFormationSlave;
         }
     }
 }

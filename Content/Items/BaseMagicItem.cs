@@ -49,8 +49,9 @@ namespace GSMP.Content.Items
         public BaseMagicItem() { // The default stats so that when a item is created it actually works
             int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
             itemStats = DefaultItemStats;
-            Castspell = new Spell("Item");
-            Spell[,] DefaultFormation = { { Castspell } };
+            Castspell = new Spell("Item", false, true);
+            //Castspell.usesFormation = true;
+            Spell[,] DefaultFormation = new Spell[,] { { new Spell("null") } };
             Castspell.formation = DefaultFormation;
         }
 
@@ -126,17 +127,16 @@ namespace GSMP.Content.Items
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // This is for the projectile's position relative to the main projectile, this can stay for better efficency
-            //int[] relativePosition = { 0, 0};  // x position, y position relative to the initialising proj, not needed here
-            // everything is temporarily disabed for refactoring    
-            //var StatSource = new MagicProjEntitySource(player, projStats, null, relativePosition, CustomFormation); // AllFormations[projStats[7]]);
-            //Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
+            //int[] relativePosition = { 0, 0};  // x position, y position relative t the initialising proj, not needed here
+            SpellEntitySource StatSource = new SpellEntitySource(player, Castspell);
+            Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe(1)
-                .AddIngredient(ItemID.DirtBlock, 1)
+                //.AddIngredient(ItemID.DirtBlock, 1)
                 .Register();
         }
     }

@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
-using Terraria.Localization;
+using GSMP.DataStructures;
 using Terraria.ObjectData;
 using GSMP.Content.Items;
 using Microsoft.Xna.Framework.Graphics;
@@ -70,7 +70,7 @@ namespace GSMP.Content.Tiles
 				// Y   [ ] [ ] [1] [ ] [ ]
 				//     X   X+1 X+2 X+3 X+4
 
-				int[,] Formation = new int[YSize2, XSize2];
+				Spell[,] Formation = new Spell[YSize2, XSize2];
 
 				int searchX;
 				int searchY;
@@ -80,12 +80,22 @@ namespace GSMP.Content.Tiles
                 {
 					for (searchY = 0; searchY < YSize2; searchY++)
                     {
-						if (Main.tile[X + searchX, Y - searchY].TileType == TileID.Stone)
+						Tile tile_ = Main.tile[X + searchX, Y - searchY];
+						if (tile_.HasTile && ModContent.GetModTile(tile_.TileType) is SpellTile spellTile)
 						{
-							originFound = true;
-							Formation[YSize2 - 1 - searchY, searchX] = 2;
-						} 
-                    }
+							Spell spell = spellTile.spell;
+							if (!spell.isFormationSlave)
+							{
+								Main.NewText("2");
+								originFound = true;
+								spell.usesFormation = false;
+								Formation[YSize2 - 1 - searchY, searchX] = spell;
+							}
+							else Main.NewText("1");
+						}
+						else Main.NewText("0");
+
+					}
                 }
 
 				if (originFound)
@@ -94,11 +104,17 @@ namespace GSMP.Content.Tiles
 					{
 						for (searchY = 0; searchY < YSize2; searchY++)
 						{
-							if (Main.tile[X + searchX, Y - searchY].HasTile && Formation[YSize2 - 1 - searchY, searchX] != 2) Formation[YSize2 - 1 - searchY, searchX] = 1; // MultiType will require this to be changed
+							Tile tile_ = Main.tile[X + searchX, Y - searchY];
+							if (tile_.HasTile && ModContent.GetModTile(tile_.TileType) is SpellTile spellTile)
+                            {
+								Spell spell = spellTile.spell;
+								if (spell.isFormationSlave)
+									Formation[YSize2 - 1 - searchY, searchX] = spell;
+							}
 						}
 					}
 					// temporarily Disabled for refactoring
-					// item.Castspell.formation = Formation;
+					item.Castspell.formation = Formation;
 				}
 				else Main.NewText("No Origin Tile");
 			}
