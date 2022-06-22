@@ -1,7 +1,7 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 using GSMP.Content.Items;
-/* Temporarily removed
+
 namespace GSMP.Commands
 {
     public class ItemCommand : ModCommand
@@ -32,11 +32,17 @@ namespace GSMP.Commands
 			{
 				int[] args2 = new int[args.Length];
 				for (int i = 0; i < args.Length; i++) args2[i] = int.Parse(args[i]); 
-				item.projStats = args2;
+				item.Castspell.projStats = args2;
 				item.UpdateStats(item);
+			}
+			else if (caller.Player.HeldItem.ModItem is SpellItem item2)
+			{
+				int[] args2 = new int[args.Length];
+				for (int i = 0; i < args.Length; i++) args2[i] = int.Parse(args[i]);
+				item2.spell.projStats = args2;
 			}
 			else Main.NewText("Invalid Item");
 		}
 	}
 }
-*/
+

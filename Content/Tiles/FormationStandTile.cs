@@ -15,6 +15,7 @@ using Terraria.ObjectData;
 using GSMP.Content.Items;
 using Microsoft.Xna.Framework.Graphics;
 using GSMP.Content.Buffs;
+using GSMP;
 
 namespace GSMP.Content.Tiles
 {
@@ -83,21 +84,23 @@ namespace GSMP.Content.Tiles
 						Tile tile_ = Main.tile[X + searchX, Y - searchY];
 						if (tile_.HasTile && ModContent.GetModTile(tile_.TileType) is SpellTile spellTile)
 						{
-							Spell spell = spellTile.spell;
-							if (!spell.isFormationSlave)
+							Spell spell = spellTile.spell(X + searchX, Y - searchY);
+							if (!spell.isFormationSlave && !(spell.Type == "Error Spell"))
 							{
-								Main.NewText("2");
+								//Main.NewText("2");
 								originFound = true;
 								spell.usesFormation = false;
 								Formation[YSize2 - 1 - searchY, searchX] = spell;
+								item.Castspell.Type = spell.Type;
 							}
-							else Main.NewText("1");
+							//else Main.NewText("1");
 						}
-						else Main.NewText("0");
+						//else Main.NewText("0");
 
 					}
                 }
 
+				Main.NewText(originFound.ToString());
 				if (originFound)
 				{
 					for (searchX = 0; searchX < XSize2; searchX++)
@@ -105,15 +108,22 @@ namespace GSMP.Content.Tiles
 						for (searchY = 0; searchY < YSize2; searchY++)
 						{
 							Tile tile_ = Main.tile[X + searchX, Y - searchY];
-							if (tile_.HasTile && ModContent.GetModTile(tile_.TileType) is SpellTile spellTile)
-                            {
-								Spell spell = spellTile.spell;
-								if (spell.isFormationSlave)
+							if (tile_.HasTile && tile_.TileType == ModContent.TileType<SpellTile>())// && ModContent.GetModTile(tile_.TileType) == SpellTile spellTile)
+							{
+								ModTile modTile = ModContent.GetModTile(tile_.TileType);
+								if (modTile is SpellTile spellTile) 
+								{
+									Spell spell = spellTile.spell(X + searchX, Y - searchY);
+									spell.usesFormation = false; //paranoia
 									Formation[YSize2 - 1 - searchY, searchX] = spell;
+								}
 							}
+							else Formation[YSize2 - 1 - searchY, searchX] = new Spell("Blank");
 						}
 					}
-					// temporarily Disabled for refactoring
+					item.Castspell.projStats[2] = 1;
+
+					item.Castspell.usesFormation = true;
 					item.Castspell.formation = Formation;
 				}
 				else Main.NewText("No Origin Tile");
@@ -175,16 +185,15 @@ namespace GSMP.Content.Tiles
 			int XSize2 = 3 + (2 * XSize);
 			int YSize2 = 3 + (2 * YSize);
 			Vector2 tilepos = new Vector2(X * 16, Y * 16);
+			CreateAura((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
+						   (j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2),
+						   128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2));
 
 			if (player.DistanceSQ(
 					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
 					(j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2)))
 					< 65535 + 256 * Math.Pow(XSize2 > YSize2 ? XSize2 : YSize2, 2)) // Player is in range to bother rendering the rectangle
 			{
-				for (int angle = 0; angle <= 360; angle++)
-					CreateAura((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
-							   (j + 2 - (tile.TileFrameY / 18)) * 16 - 64 - 16 * (XSize2 > YSize2 ? XSize2 / 2 : YSize2 / 2),
-							   128 + 16 * (XSize2 > YSize2 ? XSize2 : YSize2), angle);
 
 				if (player.DistanceSQ(
 					new Vector2((i + 2 - (tile.TileFrameX / 18)) * 16 + 4,
@@ -199,17 +208,17 @@ namespace GSMP.Content.Tiles
 
 					for (int k = 0; k < XSize2 * 16; k += 16)
 					{
-						if (Main.rand.Next(6) == 0)
+						if (Main.rand.NextBool(10))
 						{
 							// Bottom Row
 							pos = new Vector2(X2 + k - 6, Y2 + 12);
-							dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
+							dust = Dust.NewDust(pos, 18, 0, 173, 0, 0, 0);
 							Main.dust[dust].velocity.Y *= 0.1f;
 							Main.dust[dust].velocity.X *= 0.1f;
 
 							// Top Row
 							pos = new Vector2(X2 + k - 6, Y2 + 12 - (YSize2 * 16));
-							dust = Dust.NewDust(pos, 16, 0, 173, 0, 0, 0);
+							dust = Dust.NewDust(pos, 18, 0, 173, 0, 0, 0);
 							Main.dust[dust].velocity.Y *= 0.1f;
 							Main.dust[dust].velocity.X *= 0.1f;
 						}
@@ -217,17 +226,17 @@ namespace GSMP.Content.Tiles
 
 					for (int l = 0; l < YSize2 * 16; l += 16)
 					{
-						if (Main.rand.Next(6) == 0)
+						if (Main.rand.NextBool(10))
 						{
 							// Left 
 							pos = new Vector2(X2 - 8, Y2 - l);
-							dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
+							dust = Dust.NewDust(pos, 0, 18, 173, 0, 0, 0);
 							Main.dust[dust].velocity.Y *= 0.1f;
 							Main.dust[dust].velocity.X *= 0.1f;
 
 							// Right
 							pos = new Vector2(X2 + XSize2 * 16 - 8, Y2 - l);
-							dust = Dust.NewDust(pos, 0, 16, 173, 0, 0, 0);
+							dust = Dust.NewDust(pos, 0, 18, 173, 0, 0, 0);
 							Main.dust[dust].velocity.Y *= 0.1f;
 							Main.dust[dust].velocity.X *= 0.1f;
 						}
@@ -236,16 +245,24 @@ namespace GSMP.Content.Tiles
 			}
 		}
 
-        public void CreateAura(int x, int y, int dist, int angle)
+        public void CreateAura(int x, int y, int dist)
         {
 			Vector2 Center = new Vector2(x, y);
-			if (Main.rand.Next(100) == 0)
+
+			int dustMax = dist / 500 * 10;
+			if (dustMax < 10) dustMax = 10;
+			else if (dustMax > 40) dustMax = 40;
+
+			for (int i = 0; i < dustMax; i++)
 			{
-				Vector2 vector2 = new Vector2((float)(Center.X + Math.Cos(angle * (Math.PI / 180f)) * dist),
-												(float)(Center.Y + Math.Sin(angle * (Math.PI / 180f)) * dist));
-				int dust = Dust.NewDust(vector2, 0, 0, 173, 0, 0, 0);
-				Main.dust[dust].velocity.Y *= 0.1f;
-				Main.dust[dust].velocity.X *= 0.1f;
+				Vector2 vector2 = Center + Main.rand.NextVector2CircularEdge(dist, dist);
+				Vector2 offset = vector2 - Main.LocalPlayer.Center;
+				if (Math.Abs(offset.X) > Main.screenWidth * 0.6f || Math.Abs(offset.Y) > Main.screenHeight * 0.6f) continue;
+				Dust dust = Main.dust[Dust.NewDust(vector2, 0, 0, 173, 0, 0, 0)];
+				dust.velocity.Y *= 0.1f;
+				dust.velocity.X *= 0.1f;
+
+				dust.noGravity = true;
 			}
 		}
     }

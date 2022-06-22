@@ -49,10 +49,10 @@ namespace GSMP.Content.Items
         public BaseMagicItem() { // The default stats so that when a item is created it actually works
             int[] DefaultItemStats = { 100, 100, 0, 0, 5, 5, 5, 30, 30};
             itemStats = DefaultItemStats;
-            Castspell = new Spell("Item", false, true);
+            Castspell = new Spell("Item", CustomTextureID.Ball, false, true);
             //Castspell.usesFormation = true;
-            Spell[,] DefaultFormation = new Spell[,] { { new Spell("null") } };
-            Castspell.formation = DefaultFormation;
+            //Spell[,] DefaultFormation = new Spell[,] { { new Spell("null") } };
+            //Castspell.formation = DefaultFormation;
         }
 
         /// <summary>
@@ -129,8 +129,37 @@ namespace GSMP.Content.Items
             // This is for the projectile's position relative to the main projectile, this can stay for better efficency
             //int[] relativePosition = { 0, 0};  // x position, y position relative t the initialising proj, not needed here
             SpellEntitySource StatSource = new SpellEntitySource(player, Castspell);
-            Projectile.NewProjectile(StatSource, player.position, velocity, ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
+            Projectile.NewProjectile(StatSource, player.position, velocity, 
+                ModContent.ProjectileType<BaseMagicProjectile>(), damage, knockback, player.whoAmI, 0);
             return false;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            TooltipLine tooltipLine;
+            Spell[,] formation = Castspell.formation;
+            tooltipLine = new TooltipLine(Mod, "GSMP", "usesFormation: " + Castspell.usesFormation.ToString());
+            tooltips.Add(tooltipLine);
+            tooltipLine = new TooltipLine(Mod, "GSMP", "isFormationSlave: " + Castspell.isFormationSlave.ToString());
+            tooltips.Add(tooltipLine);
+            for (int j = 0; j < formation.GetLength(0); j++)
+            {
+                string line = "";
+                for (int i = 0; i < formation.GetLength(1); i++)
+                    line = line + (formation[j, i].Type != "Blank" ? (formation[j, i].isFormationSlave ? 1 : 2) : 0) + " ";
+                tooltipLine = new TooltipLine(Mod, "GSMP", j.ToString() + ": " + line);
+                tooltips.Add(tooltipLine);
+            }
+
+            for (int j = 0; j < formation.GetLength(0); j++)
+            {
+                for (int i = 0; i < formation.GetLength(1); i++)
+                    if (formation[j, i].usesFormation)
+                    {
+                        tooltipLine = new TooltipLine(Mod, "GSMP", "AHHHHH");
+                        tooltips.Add(tooltipLine);
+                    }
+            }
         }
 
         public override void AddRecipes()

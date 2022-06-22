@@ -13,6 +13,8 @@ namespace GSMP.DataStructures {
 		// Is this really the only data i need?
 		public int[] projStats;
 		public string Type;
+		public int textureID;
+		public Color color;
 
 		// Formation Stats, in order of accessing
 		public bool isFormationSlave; // So as to not have infinite loops of formations
@@ -20,17 +22,59 @@ namespace GSMP.DataStructures {
 		public Spell[,] formation;
 		public int formationRotate; // 1 = Clockwise, 0 = No Rotation, -1 = AntiClockwise
 
-		public Spell(string Type_ = "Blank", bool isFormationSlave_ = false, bool usesFormation_ = false)
+		public Spell(string Type_ = "Blank", int textureID_ = 0, bool isFormationSlave_ = false, bool usesFormation_ = false, Color color_ = default)
 		{
 			int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
 			projStats = DefaultProjStats;
 			Type = Type_;
-
+			textureID = textureID_;
+			
 			isFormationSlave = isFormationSlave_;
 			usesFormation = usesFormation_;
 			if (usesFormation) formation = new Spell[,] { { new Spell("null") } };
 			else formation = null;
 			formationRotate = 0;
+			color = color_;
+		}
+	}
+
+	public class CustomTextureID
+    {
+		public const short Default = 3;
+		public const short Arrow = 1;
+		public const short Sword = 2;
+		public const short Ball = 3;
+		public const short Star = 4;
+		public const short Knife = 5;
+	}
+
+	public class CustomTexture
+    {
+		public static string GetString(int ID)
+        {
+            return ID switch
+            {
+                //0 => "Default",
+                1 => "Arrow",
+                2 => "Sword",
+				3 => "Ball",
+                4 => "Star",
+				5 => "Knife",
+                _ => "Ball",
+            };
+        }
+
+		public static int GetID(string Name)
+		{
+			return Name switch
+			{
+				"Arrow" => 1,
+				"Sword" => 2,
+				"Ball" => 3,
+				"Star" => 4,
+				"Knife" => 5,
+				_ => 3,
+			};
 		}
 	}
 	
@@ -87,12 +131,14 @@ namespace GSMP.DataStructures {
 			TagCompound tag = new TagCompound();
 
 			tag["Type"] = spell.Type;
+			tag["textureID"] = spell.textureID;
+			tag["Color"] = spell.color;
 			tag["projStats"] = spell.projStats.ToList();
 
 			tag["isFormationSlave"] = spell.isFormationSlave;
 			tag["usesFormation"] = spell.usesFormation;
 			// These could be both true, so this makes sure that there isnt infinite formation saving
-			if (spell.usesFormation && !spell.isFormationSlave) tag["formation"] = spell.formation;
+			if (spell.usesFormation && !spell.isFormationSlave && spell.Type != "Default") tag["formation"] = spell.formation;
 			tag["formationRotate"] = spell.formationRotate;
 			
 			return tag;
@@ -102,6 +148,8 @@ namespace GSMP.DataStructures {
 			Spell spell = new Spell();
 
 			if (tag.ContainsKey("Type")) spell.Type = tag.Get<string>("Type");
+			if (tag.ContainsKey("textureID")) spell.textureID = tag.Get<int>("textureID");
+			if (tag.ContainsKey("Color")) spell.color = tag.Get<Color>("Color");
 			if (tag.ContainsKey("projStats")) spell.projStats = tag.Get<List<int>>("projStats").ToArray();
 
 			if (tag.ContainsKey("isFormationSlave")) spell.isFormationSlave = tag.Get<bool>("isFormationSlave");

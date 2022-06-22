@@ -7,6 +7,7 @@ using GSMP;
 using System.Collections.Generic;
 using System.Linq;
 using GSMP.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GSMP.Content.Projectiles
 {
@@ -38,9 +39,51 @@ namespace GSMP.Content.Projectiles
         internal bool allLocked;
         internal int amountUnLocked;
 
-        public override string Texture => "GSMP/Assets/Projectile Images/IceBolt";
+        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
         public BaseMagicProjectile ParentProjectile;
 
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/Projectile Images/" +
+                CustomTexture.GetString(spell.textureID)).Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("GSMP/Assets/spellTileglow").Value;
+
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            
+            Vector2 origin = new Rectangle(0, 0, texture.Width, texture.Height).Size() / 2f;
+
+            origin.X = (float)(Projectile.spriteDirection == 1 ? -4f : 20f);
+
+            Main.EntitySpriteDraw(texture,
+                Projectile.Center - Main.screenPosition - new Vector2(texture.Width / 2, texture.Height / 2)/* + new Vector2(0f, Projectile.gfxOffY)*/,
+                new Rectangle(0, 0, texture.Width, texture.Height), 
+                //Projectile.GetAlpha(lightColor), 
+                spell.color,
+                Projectile.rotation, 
+                origin, 
+                Projectile.scale,
+                SpriteEffects.None, 
+                0);
+
+            //Main.EntitySpriteDraw(
+            //    texture,
+            //    new Vector2(Projectile.position.X * 16, Projectile.position.Y * 16) + zero,
+            //    new Rectangle(displayspellx, 0, 16, 16),
+            //    Lighting.GetColor(new Point((int)Projectile.position.X / 16, (int)Projectile.position.Y / 16)), 0f, default, 1f, SpriteEffects.None, 0);
+
+            if (!spell.isFormationSlave)
+                Main.EntitySpriteDraw(glowTexture,
+                    Projectile.Center - Main.screenPosition - new Vector2(texture.Width / 2, texture.Height / 2),
+                    new Rectangle(0, 0, texture.Width, texture.Height),
+                    Projectile.GetAlpha(lightColor),
+                    Projectile.rotation,
+                    origin,
+                    Projectile.scale,
+                    SpriteEffects.None,
+                    0);
+
+            return false;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -69,19 +112,23 @@ namespace GSMP.Content.Projectiles
                         ParentProjectile = null;
                         Projectile.tileCollide = false;
 
-                        // find Parent Proj point in formation
+                        // find this Proj point in formation
                         //spell.formation = new Spell[,] { { new Spell("null") } }; // testing
+                        bool flag = false;
                         for (int i = 0; i < spell.formation.GetLength(1); i++)
                         {
                             for (int j = 0; j < spell.formation.GetLength(0); j++)
                             {
-                                if (!spell.formation[j, i].isFormationSlave)
+                                if (!spell.formation[j, i].isFormationSlave && spell.formation[j, i].Type != "Blank")
                                 {
                                     Xoffset = i;
                                     Yoffset = j;
+                                    //Main.NewText("Xoffset: " + Xoffset.ToString() + ", Yoffset: " + Yoffset.ToString());
+                                    flag = true;
                                     break;
                                 }
                             }
+                            if (flag) break;
                         }
 
                         // Create a bunch of projectiles for the rest of the formation
@@ -89,16 +136,16 @@ namespace GSMP.Content.Projectiles
                         {
                             for (int y = 0; y < spell.formation.GetLength(0); y++)
                             {
-                                if (spell.formation[y, x].Type != null) // Checking if position in formation !blank, could add a Type string for blank if needed
+                                if (spell.formation[y, x].isFormationSlave)
                                 {
                                     // x position, y position, rotate? (1 = true)
                                     int[] posStats = { x - Xoffset, y - Yoffset};
-                                    // player (required), BMI stats, This Projectile, Formation offsets, Formation
+                                    // player (required), Item's stats, This Projectile, Formation offsets
                                     var Source_ = new SpellEntitySource(Main.player[Projectile.owner], spell.formation[y, x], this, posStats);
                                     //var SpawnSource = new MagicProjEntitySource(Main.player[Projectile.owner], Source.Stats, this, passStats, Source.Form);
                                     Projectile.NewProjectile(Source_, Main.player[Projectile.owner].position,
                                         Projectile.velocity, ModContent.ProjectileType<BaseMagicProjectile>(),
-                                        Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
+                                        Projectile.damage, Projectile.knockBack, Projectile.owner, x - Xoffset, y - Yoffset);
                                 }
                             }
                         }
@@ -218,23 +265,25 @@ namespace GSMP.Content.Projectiles
 
         public override void AI() // This somehow needed no fixing with using Spell
         {
-            if (stats[2] == 1 || stats[2] == 2)
+            if (CustomAIStyle == 1 || CustomAIStyle == 2)
             {
-                if (Projectile.ai[0] != 0)
+                if (spell.isFormationSlave)
                 {
-                    if (timer < 360) timer += 4 * vars[2];
+                    if (timer < 360) timer += 4 * spell.formationRotate;
                     else timer = 0;
                     //checks if last proj is dead or not, if alive does formation stuff. 
                     if (Main.projectile[ParentProjectile.Projectile.whoAmI].active)
                     {
                         // Getting the amount the projectile should be offset on x and y axis. 
                         // Basically, if this didnt happen the whole formation would spawn to the bottom right of the main projectile
-                        int Xoff = 0 - vars[0];
-                        int Yoff = 0 - vars[1];
+
+                        int Xoff = 0 - vars[0]; //(int)Projectile.ai[0];
+                        int Yoff = 0 - vars[1]; //(int)Projectile.ai[1];
+
 
                         // Vector1 is where the projectile would be in relation to the Main projectile if there was no rotation
-                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + (Xoff * 20),
-                                                      Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + (Yoff * 20));
+                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + (Xoff * 16),
+                                                      Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + (Yoff * 16));
 
                         // Angle between were the projectile would be with no rotation and main projectile position
                         float angle = (float)(vector1.AngleTo(Main.projectile[ParentProjectile.Projectile.whoAmI].Center) * (180f / Math.PI)) - 180;
@@ -245,11 +294,11 @@ namespace GSMP.Content.Projectiles
                         // I still dont understand why this works, but it does. 
                         // Basically it uses angle and timer to find the angle it should be at in relation to the main projectile, then other variables to determine the distance as sin and cos functions have a max output of 1 and min output of -1
                         // Idk if that makes sence
-                        Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist),
-                                                      (float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist));
+                        Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 16 * diagDist),
+                                                      (float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 16 * diagDist));
                         // This basically makes the projectile home into the position where it is meant to be at a speed such that it will do it instantly but not do weird homing stuff once it is there.
                         //float parentvelocity = (float)Math.Sqrt(Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.X, 2) + Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.Y, 2));
-                        if (stats[2] == 2)
+                        if (CustomAIStyle == 2)
                         {
                             if (!locked)
                             {
@@ -285,7 +334,7 @@ namespace GSMP.Content.Projectiles
                     // whatever AI the main projectile should have. e.g. homing on cursor
                 }
             }
-            else if (stats[2] == 3)
+            else if (CustomAIStyle == 3)
             {
                 Player player = Main.player[Projectile.owner];
 
@@ -294,7 +343,7 @@ namespace GSMP.Content.Projectiles
 
                 //Projectile.velocity.Y *= 0.1f;
 
-                if (Projectile.ai[0] == 0)
+                if (spell.isFormationSlave)
                 {
                     if (requiredProjs > 0) fancySpawningTimer += 4;
                     if (player.channel && follow)
@@ -334,19 +383,19 @@ namespace GSMP.Content.Projectiles
                     if (player.channel)
                         Projectile.timeLeft = stats[4];
                     requiredProjs = ParentProjectile.requiredProjs;
-                    if (timer < 360 && requiredProjs < 1 && ParentProjectile.allLocked) timer += 4 * vars[2];
+                    if (timer < 360 && requiredProjs < 1 && ParentProjectile.allLocked) timer += 4 * spell.formationRotate;
                     else timer = 0;
 
                     if (Main.projectile[ParentProjectile.Projectile.whoAmI].active)
                     {
 
-                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + (vars[0] * -20),
-                                                      Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + (vars[1] * -20));
+                        Vector2 vector1 = new Vector2(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + (vars[0] * -16),
+                                                      Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + (vars[1] * -16));
 
                         float angle = (float)(vector1.AngleTo(Main.projectile[ParentProjectile.Projectile.whoAmI].Center) * (180f / Math.PI)) - 180;
 
-                        Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist),
-                                                      (float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 20 * diagDist));
+                        Vector2 vector2 = new Vector2((float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.X + Math.Cos((angle - 180 + timer) * (Math.PI / 180f)) * 16 * diagDist),
+                                                      (float)(Main.projectile[ParentProjectile.Projectile.whoAmI].Center.Y + Math.Sin((angle - 180 + timer) * (Math.PI / 180f)) * 16 * diagDist));
 
                         //float parentvelocity = (float)Math.Sqrt(Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.X, 2) + Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.Y, 2));
 
