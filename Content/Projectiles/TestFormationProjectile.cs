@@ -178,9 +178,7 @@ namespace GSMP.Content.Projectiles
     }
     public class TestFormationProjectile : ModProjectile
     {
-        readonly string MainTexture = "GSMP/Assets/Projectile Images/WaterBolt";
-        readonly string AltTexture = "GSMP/Assets/Projectile Images/IceBolt";
-        public override string Texture => Projectile.ai[0] == 0 ? MainTexture : AltTexture;
+        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
         public Projectile ParentProjectile;
         public override void SetDefaults()
         {

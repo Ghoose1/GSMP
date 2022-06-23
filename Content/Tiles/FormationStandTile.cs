@@ -84,14 +84,14 @@ namespace GSMP.Content.Tiles
 						Tile tile_ = Main.tile[X + searchX, Y - searchY];
 						if (tile_.HasTile && ModContent.GetModTile(tile_.TileType) is SpellTile spellTile)
 						{
-							Spell spell = spellTile.spell(X + searchX, Y - searchY);
+							Spell spell = SpellTile.spell(X + searchX, Y - searchY);
 							if (!spell.isFormationSlave && !(spell.Type == "Error Spell"))
 							{
 								//Main.NewText("2");
 								originFound = true;
-								spell.usesFormation = false;
-								Formation[YSize2 - 1 - searchY, searchX] = spell;
-								item.Castspell.Type = spell.Type;
+								//spell.usesFormation = false;
+								item.Castspell = spell;
+								//Formation[YSize2 - 1 - searchY, searchX] = spell;
 							}
 							//else Main.NewText("1");
 						}
@@ -100,7 +100,7 @@ namespace GSMP.Content.Tiles
 					}
                 }
 
-				Main.NewText(originFound.ToString());
+				//Main.NewText(originFound.ToString());
 				if (originFound)
 				{
 					for (searchX = 0; searchX < XSize2; searchX++)
@@ -111,12 +111,9 @@ namespace GSMP.Content.Tiles
 							if (tile_.HasTile && tile_.TileType == ModContent.TileType<SpellTile>())// && ModContent.GetModTile(tile_.TileType) == SpellTile spellTile)
 							{
 								ModTile modTile = ModContent.GetModTile(tile_.TileType);
-								if (modTile is SpellTile spellTile) 
-								{
-									Spell spell = spellTile.spell(X + searchX, Y - searchY);
-									spell.usesFormation = false; //paranoia
-									Formation[YSize2 - 1 - searchY, searchX] = spell;
-								}
+								Spell spell = SpellTile.spell(X + searchX, Y - searchY);
+								spell.usesFormation = false; //paranoia
+								Formation[YSize2 - 1 - searchY, searchX] = spell;
 							}
 							else Formation[YSize2 - 1 - searchY, searchX] = new Spell("Blank");
 						}

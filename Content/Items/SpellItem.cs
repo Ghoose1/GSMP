@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using GSMP.Content.Tiles;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace GSMP.Content.Items
 {
@@ -64,14 +65,41 @@ namespace GSMP.Content.Items
             tooltips.Add(tooltipLine);
         }
 
-        public override void SaveData(TagCompound tag)
-        {
-            tag["Spell"] = spell;
-        }
+        public override void SaveData(TagCompound tag) => tag["Spell"] = spell;
 
         public override void LoadData(TagCompound tag)
         {
             if (tag.ContainsKey("Spell")) spell = tag.Get<Spell>("Spell");
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            Texture2D spellTexture = ModContent.Request<Texture2D>("GSMP/Assets/Projectile Images/" +
+                CustomTexture.GetString(spell.textureID)).Value;
+            Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/SpellBookGray").Value;
+
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+
+            Color color = new Color(spell.R, spell.G, spell.B);
+
+            scale = scale - texture.Width / (float)Math.Pow(frame.Width, 2);
+
+            spriteBatch.Draw(texture, position, new Rectangle(0, 0, texture.Width, texture.Height), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            Vector2 spellPos = new Vector2(position.X + ((26.173f - spellTexture.Width/4) * scale), position.Y - ((spellTexture.Height - 34)/2) * scale);
+            spellPos = new Vector2(position.X + (18) *scale, position.Y + 19 * scale);
+            spriteBatch.Draw(spellTexture, spellPos,
+                new Rectangle(0, 0, spellTexture.Width, spellTexture.Height),
+                color, 0.75f, new Vector2(spellTexture.Width / 2, spellTexture.Height / 2), scale, SpriteEffects.None, 1f);
+
+
+            //spriteBatch.Draw(
+            //    spellTexture,
+            //    position,  // + zero,
+            //    new Rectangle(0, 0, texture.Width, texture.Height),
+            //    color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+            return false;
         }
 
         public override void AddRecipes()
@@ -82,16 +110,20 @@ namespace GSMP.Content.Items
 
     public class TexureCMD : ModCommand
     {
-        public override string Command => "tex";
+        public override string Command => "t";
         public override CommandType Type => CommandType.Chat;
-        public override string Description => "/tex <TextureID> <R> <G> <B>";
+        public override string Description => "/t <TextureID> <R> <G> <B>";
         public override void Action(CommandCaller caller, string input, string[] args)
         {
             if (caller.Player.HeldItem.ModItem is SpellItem item)
             {
                 item.spell.textureID = CustomTexture.GetID(args[0]);
                 if (args.Length == 4) 
-                    item.spell.color = new Color(int.TryParse(args[1], out int r) ? r : 100, int.TryParse(args[2], out int g) ? g : 100, int.TryParse(args[3], out int b) ? b : 100);
+                {
+                    item.spell.R = int.TryParse(args[1], out int r) ? r : 100;
+                    item.spell.G = int.TryParse(args[2], out int g) ? g : 100;
+                    item.spell.B = int.TryParse(args[3], out int b) ? b : 100;
+                }
             }
         }
     }

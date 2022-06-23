@@ -7,6 +7,7 @@ namespace GSMP.Content.Projectiles
 {
     public class TeleProj : ModProjectile
     {
+        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("cool projectile");

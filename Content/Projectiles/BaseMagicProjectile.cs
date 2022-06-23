@@ -46,9 +46,6 @@ namespace GSMP.Content.Projectiles
         {
             Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/Projectile Images/" +
                 CustomTexture.GetString(spell.textureID)).Value;
-            Texture2D glowTexture = ModContent.Request<Texture2D>("GSMP/Assets/spellTileglow").Value;
-
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             
             Vector2 origin = new Rectangle(0, 0, texture.Width, texture.Height).Size() / 2f;
 
