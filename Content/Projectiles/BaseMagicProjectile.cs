@@ -53,12 +53,12 @@ namespace GSMP.Content.Projectiles
             Vector2 origin = new Rectangle(0, 0, texture.Width, texture.Height).Size() / 2f;
 
             origin.X = (float)(Projectile.spriteDirection == 1 ? -4f : 20f);
+            Color color = new Color(spell.R, spell.G, spell.B);
 
             Main.EntitySpriteDraw(texture,
                 Projectile.Center - Main.screenPosition - new Vector2(texture.Width / 2, texture.Height / 2)/* + new Vector2(0f, Projectile.gfxOffY)*/,
                 new Rectangle(0, 0, texture.Width, texture.Height), 
-                //Projectile.GetAlpha(lightColor), 
-                spell.color,
+                color,
                 Projectile.rotation, 
                 origin, 
                 Projectile.scale,
@@ -71,16 +71,16 @@ namespace GSMP.Content.Projectiles
             //    new Rectangle(displayspellx, 0, 16, 16),
             //    Lighting.GetColor(new Point((int)Projectile.position.X / 16, (int)Projectile.position.Y / 16)), 0f, default, 1f, SpriteEffects.None, 0);
 
-            if (!spell.isFormationSlave)
-                Main.EntitySpriteDraw(glowTexture,
-                    Projectile.Center - Main.screenPosition - new Vector2(texture.Width / 2, texture.Height / 2),
-                    new Rectangle(0, 0, texture.Width, texture.Height),
-                    Projectile.GetAlpha(lightColor),
-                    Projectile.rotation,
-                    origin,
-                    Projectile.scale,
-                    SpriteEffects.None,
-                    0);
+            //if (!spell.isFormationSlave)
+            //    Main.EntitySpriteDraw(glowTexture,
+            //        Projectile.Center - Main.screenPosition - new Vector2(texture.Width / 2, texture.Height / 2),
+            //        new Rectangle(0, 0, texture.Width, texture.Height),
+            //        Projectile.GetAlpha(lightColor),
+            //        Projectile.rotation,
+            //        origin,
+            //        Projectile.scale,
+            //        SpriteEffects.None,
+            //        0);
 
             return false;
         }

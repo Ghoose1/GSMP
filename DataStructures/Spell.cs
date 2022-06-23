@@ -14,7 +14,10 @@ namespace GSMP.DataStructures {
 		public int[] projStats;
 		public string Type;
 		public int textureID;
-		public Color color;
+		//public Color color;
+		public int R;
+		public int G;
+		public int B;
 
 		// Formation Stats, in order of accessing
 		public bool isFormationSlave; // So as to not have infinite loops of formations
@@ -22,7 +25,7 @@ namespace GSMP.DataStructures {
 		public Spell[,] formation;
 		public int formationRotate; // 1 = Clockwise, 0 = No Rotation, -1 = AntiClockwise
 
-		public Spell(string Type_ = "Blank", int textureID_ = 0, bool isFormationSlave_ = false, bool usesFormation_ = false, Color color_ = default)
+		public Spell(string Type_ = "Blank", int textureID_ = 0, bool isFormationSlave_ = false, bool usesFormation_ = false, int R_ = 100, int G_ = 100, int B_ = 100)
 		{
 			int[] DefaultProjStats = { 0, 0, 1, 0, 60, 1, 0, 0 };
 			projStats = DefaultProjStats;
@@ -34,7 +37,9 @@ namespace GSMP.DataStructures {
 			if (usesFormation) formation = new Spell[,] { { new Spell("null") } };
 			else formation = null;
 			formationRotate = 0;
-			color = color_;
+			R = R_;
+			G = G_;
+			B = B_;
 		}
 	}
 
@@ -132,7 +137,9 @@ namespace GSMP.DataStructures {
 
 			tag["Type"] = spell.Type;
 			tag["textureID"] = spell.textureID;
-			tag["Color"] = spell.color;
+			tag["R"] = spell.R;
+			tag["G"] = spell.G;
+			tag["B"] = spell.B;
 			tag["projStats"] = spell.projStats.ToList();
 
 			tag["isFormationSlave"] = spell.isFormationSlave;
@@ -149,7 +156,9 @@ namespace GSMP.DataStructures {
 
 			if (tag.ContainsKey("Type")) spell.Type = tag.Get<string>("Type");
 			if (tag.ContainsKey("textureID")) spell.textureID = tag.Get<int>("textureID");
-			if (tag.ContainsKey("Color")) spell.color = tag.Get<Color>("Color");
+			if (tag.ContainsKey("R")) spell.R = tag.Get<int>("R");
+			if (tag.ContainsKey("G")) spell.G = tag.Get<int>("G");
+			if (tag.ContainsKey("B")) spell.B = tag.Get<int>("B");
 			if (tag.ContainsKey("projStats")) spell.projStats = tag.Get<List<int>>("projStats").ToArray();
 
 			if (tag.ContainsKey("isFormationSlave")) spell.isFormationSlave = tag.Get<bool>("isFormationSlave");

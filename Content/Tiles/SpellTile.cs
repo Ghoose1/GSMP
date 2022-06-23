@@ -77,12 +77,16 @@ namespace GSMP.Content.Tiles
             Texture2D glowTexture = ModContent.Request<Texture2D>("GSMP/Assets/spellTileglow").Value;
 
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
+            Pos.Y -= (texture.Height - 16) / 2;
+            Pos.X -= (texture.Width - 16) / 2;
+            Color color = new Color(spell(i, j).R, spell(i, j).G, spell(i, j).B);
 
             spriteBatch.Draw(
                 texture,
-                new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero,
-                new Rectangle(0, 0, 16, 16),
-                /*spell(i,j).color*/ Color.Red, 0f, default, 1f, SpriteEffects.None, 0f);
+                Pos,
+                new Rectangle(0, 0, texture.Width, texture.Height),
+                color, 0f, default, 1f, SpriteEffects.None, 0f);
 
             if (!spell(i, j).isFormationSlave)
                 spriteBatch.Draw(
