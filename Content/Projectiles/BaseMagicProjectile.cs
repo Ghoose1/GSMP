@@ -158,60 +158,6 @@ namespace GSMP.Content.Projectiles
                         parentVelocity = (float)Math.Sqrt(Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.X, 2) + Math.Pow(Main.projectile[ParentProjectile.Projectile.whoAmI].velocity.Y, 2));
                         diagDist = Math.Sqrt(Math.Pow(-vars[0], 2) + Math.Pow(-vars[1], 2));
                     }
-                    #region old code
-                    // uhhh the code for onspawn stuff with the orbiting formation is somewhere here
-                    //
-                    //if (Formation == 1)
-                    //{
-                    //    if (Projectile.ai[0] == 0f)
-                    //    {
-                    //        ParentProjectile = null;
-                    //        Projectile.tileCollide = true;
-                    //        //form[0] = Projectile;
-                    //        var SpawnSource = new TestProjEntitySource(Main.player[Projectile.owner], this, 100, 0, 1, Source.var4);
-                    //        Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 1);
-                    //        Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1, 0);
-                    //    }
-                    //    else
-                    //    {
-                    //        var1 = Source.var1;
-                    //        Projectile.tileCollide = false;
-                    //        ParentProjectile = Source.proj.Projectile;
-                    //        //form[(int)Projectile.ai[0]] = Projectile;
-                    //        if (Projectile.ai[0] < 3)
-                    //        {
-                    //            var SpawnSource = new TestProjEntitySource(Main.player[Projectile.owner], this, 50 / (int)Projectile.ai[0], 0, 1, Source.var4);
-                    //            Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0] + 1, 1);
-                    //            Projectile.NewProjectile(SpawnSource, Projectile.position, Projectile.velocity, ModContent.ProjectileType<TestFormationProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0] + 1, 0);
-                    //        }
-                    //    }
-                    //}
-                    //after adding the formation to the arrays, make another case for it then go to the test item to change stuff
-                    //switch (Formation)
-                    //{
-                    //    case 2:
-                    //        FormationSpawnHandeler(funny, Source, Formation);
-                    //        break;
-                    //    case 3:
-                    //        FormationSpawnHandeler(funnybig, Source, Formation);
-                    //        break;
-                    //    case 4:
-                    //        FormationSpawnHandeler(penis, Source, Formation);
-                    //        break;
-                    //    case 5:
-                    //        FormationSpawnHandeler(linetest, Source, Formation);
-                    //        break;
-                    //    case 6:
-                    //        FormationSpawnHandeler(hehe, Source, Formation);
-                    //        break;
-                    //    //case 7:
-                    //    //    FormationSpawnHandeler(name, Source, Formation);
-                    //    //    break;
-                    //    default:
-                    //        break;
-                    //}
-                    #endregion
-
                 }
                 if (CustomAIStyle == 3) // main projectile follows cursor until released and other projectiles spanw at player.
                 {
