@@ -30,6 +30,7 @@ namespace GSMP.Content.Tiles
     {
         public override string Texture => "GSMP/Assets/ManaJar";
 
+        #region Stat things
         public static int Mana(int i, int j, int Transfer)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
@@ -66,8 +67,9 @@ namespace GSMP.Content.Tiles
                 return modEntity.StoredConnections.ToArray();
             else return new Point16[] { Point16.Zero };
         }
+        #endregion
 
-        public override void PlaceInWorld(int i, int j, Item item)
+        public override void PlaceInWorld(int i, int j, Item item) // Placing Tile entity and assigning parameters
         {
             TileEntity.PlaceEntityNet(i, j, ModContent.TileEntityType<ManaStorageEntity>());
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity existing))
@@ -89,7 +91,7 @@ namespace GSMP.Content.Tiles
             AddMapEntry(new Color(100, 100, 255));
         }
 
-        public override bool RightClick(int i, int j)
+        public override bool RightClick(int i, int j) // Debug stuff
         {
             Main.NewText("Mana: " + Mana(i, j).ToString() + " / " + MaxMana(i, j).ToString());
             for (int k = 0; k < StoredConnections(i, j).Length; k++)
@@ -98,33 +100,47 @@ namespace GSMP.Content.Tiles
             return false;
         }
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        /*public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/ManaJar").Value;
 
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
-            int frameX = (int)Math.Floor((float)(Mana(i, j) / (MaxMana(i, j) / 6)));
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange); // These two lines are from some example tile, i dont entirely understand them.
+            Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero; 
 
-            spriteBatch.Draw(
+            int frameX = (int)Math.Floor((float)(Mana(i, j) / (MaxMana(i, j) / 6))); // Making the sprite change
+
+            spriteBatch.Draw( // Drawing the actual sprite
                 texture,
                 Pos,
                 new Rectangle(frameX * 18, 0, 16, 16),
                 Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
 
-            PrimitiveDrawing.DrawLineList(new Vector2[] { Pos, Pos + new Vector2(16, 0) }, Color.White);
+            for (int k = 0; k < StoredConnections(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            {
+                Vector2 vector1 = new Vector2(i * 16, j * 16); // this tile pos
+                Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16); // other tile pos
+                PrimitiveDrawing.DrawLineList(new Vector2[] { vector1, vector2 }, Color.White);
+            }
 
-            //for (int k = 0; k < StoredConnections(i, j).Length; k++)
-            //{
-            //    Vector2 vector1 = new Vector2(i * 16, j * 16);
-            //    Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16);
-            //    //Main.NewText("ScreenX: " + Main.screenPosition.X + ", ScreenY: " + Main.screenPosition.Y);
-            //    vector1 = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
-            //    vector2 = new Vector2(Main.screenPosition.X + 600, Main.screenPosition.Y + 600);
-            //    PrimitiveDrawing.DrawLineList(new Vector2[] { vector1, vector2 }, Color.White);
-            //}
+            return false; // Stop vanilla draw code from running
+        }*/
 
-            return false;
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/ManaJar").Value;
+
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange); // These two lines are from some example tile, i dont entirely understand them.
+            Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
+
+            int frameX = (int)Math.Floor((float)(Mana(i, j) / (MaxMana(i, j) / 6))); // Making the sprite change
+
+            spriteBatch.Draw( // Drawing the actual sprite
+                texture,
+                Pos,
+                new Rectangle(frameX * 18, 0, 16, 16),
+                Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
+
+            return false; // Stop vanilla draw code from running
         }
 
         public override bool Drop(int i, int j)
@@ -147,10 +163,10 @@ namespace GSMP.Content.Tiles
             return ValidTiles.Contains(Main.tile[x, y].TileType);
         }
 
-        public override void PostGlobalUpdate()
-        {
-            PrimitiveDrawing.DrawFilledRectangle(new Vector2(Position.X, Position.Y), new Vector2(Position.X + 15, Position.Y + 15), Color.White, Color.Blue, Color.Red, Color.Green);
-        }
+        //public override void PostGlobalUpdate()
+        //{
+        //    PrimitiveDrawing.DrawFilledRectangle(new Vector2(Position.X, Position.Y), new Vector2(Position.X + 15, Position.Y + 15), Color.White, Color.Blue, Color.Red, Color.Green);
+        //}
 
         public override void Update()
         {
