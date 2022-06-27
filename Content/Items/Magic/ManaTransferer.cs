@@ -3,7 +3,9 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using GSMP.Content.Tiles;
 using Microsoft.Xna.Framework;
-using GraphicsLib.Examples;
+using GraphicsLib.Primitives;
+using Terraria.ID;
+using Terraria.Graphics;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -131,7 +133,27 @@ namespace GSMP.Content.Items.Magic
         public override void SetDefaults()
         {
             Item.CloneDefaults(165);
-            Item.shoot = ModContent.ProjectileType<ExampleLine>();
+            Item.shoot = ModContent.ProjectileType<FuckProj>();
+        }
+    }
+
+    public class FuckProj : ModProjectile
+    {
+        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
+        public override void SetDefaults()
+        {
+            Projectile.CloneDefaults(ProjectileID.WaterBolt);
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Vector2[] array = new Vector2[] { Projectile.position, new Vector2(Projectile.position.X + 16, Projectile.position.Y + 16) };
+            PrimitiveDrawing.DrawLineList(array, Color.White);
+            return true;
+        }
+
+        public override void AI()
+        {
+            AIType = 27;
         }
     }
 }

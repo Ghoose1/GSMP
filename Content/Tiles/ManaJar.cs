@@ -112,15 +112,17 @@ namespace GSMP.Content.Tiles
                 new Rectangle(frameX * 18, 0, 16, 16),
                 Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
 
-            for (int k = 0; k < StoredConnections(i, j).Length; k++)
-            {
-                Vector2 vector1 = new Vector2(i * 16, j * 16);
-                Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16);
-                //Main.NewText("ScreenX: " + Main.screenPosition.X + ", ScreenY: " + Main.screenPosition.Y);
-                vector1 = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
-                vector2 = new Vector2(Main.screenPosition.X + 600, Main.screenPosition.Y + 600);
-                PrimitiveDrawing.DrawLineStrip(new Vector2[] { vector1, vector2 }, Color.White);
-            }
+            PrimitiveDrawing.DrawLineList(new Vector2[] { Pos, Pos + new Vector2(16, 0) }, Color.White);
+
+            //for (int k = 0; k < StoredConnections(i, j).Length; k++)
+            //{
+            //    Vector2 vector1 = new Vector2(i * 16, j * 16);
+            //    Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16);
+            //    //Main.NewText("ScreenX: " + Main.screenPosition.X + ", ScreenY: " + Main.screenPosition.Y);
+            //    vector1 = new Vector2(Main.screenPosition.X, Main.screenPosition.Y);
+            //    vector2 = new Vector2(Main.screenPosition.X + 600, Main.screenPosition.Y + 600);
+            //    PrimitiveDrawing.DrawLineList(new Vector2[] { vector1, vector2 }, Color.White);
+            //}
 
             return false;
         }
@@ -143,6 +145,11 @@ namespace GSMP.Content.Tiles
         public override bool IsTileValidForEntity(int x, int y)
         {
             return ValidTiles.Contains(Main.tile[x, y].TileType);
+        }
+
+        public override void PostGlobalUpdate()
+        {
+            PrimitiveDrawing.DrawFilledRectangle(new Vector2(Position.X, Position.Y), new Vector2(Position.X + 15, Position.Y + 15), Color.White, Color.Blue, Color.Red, Color.Green);
         }
 
         public override void Update()
