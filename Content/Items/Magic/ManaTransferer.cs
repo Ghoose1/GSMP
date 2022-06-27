@@ -3,6 +3,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using GSMP.Content.Tiles;
 using Microsoft.Xna.Framework;
+using GraphicsLib.Examples;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -121,6 +122,16 @@ namespace GSMP.Content.Items.Magic
             }
 
             return true;
+        }
+    }
+
+    public class Testthing : ModItem
+    {
+        public override string Texture => "GSMP/Assets/SpellBookOrange";
+        public override void SetDefaults()
+        {
+            Item.CloneDefaults(165);
+            Item.shoot = ModContent.ProjectileType<ExampleLine>();
         }
     }
 }

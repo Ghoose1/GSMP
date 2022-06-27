@@ -1,3 +1,4 @@
 displayName = GSMP Mod
 author = Ghoose
 version = 0.1
+modReferences = GraphicsLib@2.0.0.2

@@ -19,4 +19,9 @@
   <ItemGroup>
     <Folder Include="Content\Items\Consumable\" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GraphicsLib">
+      <HintPath>..\..\..\tModLoader-preview\ModReader\GraphicsLib\GraphicsLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
