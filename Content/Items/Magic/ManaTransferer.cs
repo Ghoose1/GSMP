@@ -71,8 +71,8 @@ namespace GSMP.Content.Items.Magic
                         if (tile1.HasTile && tile.TileType == ModContent.TileType<ManaJar>())
                         {
                             Main.NewText("D");
-                            Point16 point1 = new Point16(X1, Y1);
-                            Point16 point2 = new Point16(X2, Y2);
+                            Vector2 point1 = new Vector2(X1, Y1);
+                            Vector2 point2 = new Vector2(X2, Y2);
                             ManaJar.AddConnection(X2, Y2, point1);
                             ManaJar.AddConnection(X1, Y1, point2);
                             flag1 = false;
@@ -124,36 +124,6 @@ namespace GSMP.Content.Items.Magic
             }
 
             return true;
-        }
-    }
-
-    public class Testthing : ModItem
-    {
-        public override string Texture => "GSMP/Assets/SpellBookOrange";
-        public override void SetDefaults()
-        {
-            Item.CloneDefaults(165);
-            Item.shoot = ModContent.ProjectileType<FuckProj>();
-        }
-    }
-
-    public class FuckProj : ModProjectile
-    {
-        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
-        public override void SetDefaults()
-        {
-            Projectile.CloneDefaults(ProjectileID.WaterBolt);
-        }
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Vector2[] array = new Vector2[] { Projectile.position, new Vector2(Projectile.position.X + 16, Projectile.position.Y + 16) };
-            PrimitiveDrawing.DrawLineList(array, Color.White);
-            return true;
-        }
-
-        public override void AI()
-        {
-            AIType = 27;
         }
     }
 }

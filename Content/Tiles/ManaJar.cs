@@ -9,6 +9,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using GraphicsLib.Primitives;
+using Terraria.Graphics.Effects;
 
 namespace GSMP.Content.Items.Placeable
 {
@@ -55,17 +56,17 @@ namespace GSMP.Content.Tiles
             else return 1;
         }
 
-        public static void AddConnection(int i, int j, Point16 point)
+        public static void AddConnection(int i, int j, Vector2 pos)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                modEntity.StoredConnections.Add(point);
+                modEntity.StoredConnections.Add(pos);
         }
 
-        public static Point16[] StoredConnections(int i, int j)
+        public static Vector2[] StoredConnections(int i, int j)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
                 return modEntity.StoredConnections.ToArray();
-            else return new Point16[] { Point16.Zero };
+            else return new Vector2[] { Vector2.Zero };
         }
         #endregion
 
@@ -134,14 +135,37 @@ namespace GSMP.Content.Tiles
 
             int frameX = (int)Math.Floor((float)(Mana(i, j) / (MaxMana(i, j) / 6))); // Making the sprite change
 
-            spriteBatch.Draw( // Drawing the actual sprite
-                texture,
-                Pos,
-                new Rectangle(frameX * 18, 0, 16, 16),
-                Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw( texture, Pos, new Rectangle(frameX * 18, 0, 16, 16), Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
+
+            for (int k = 0; k < StoredConnections(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            {
+                Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16) + zero;
+                Vector2 vector1 = new Vector2(i * 16, j * 16) + zero;
+
+                Vector2[] points = new Vector2[] { vector1, vector2 };
+
+                if (vector2.X > vector1.X || (vector2.X < vector1.X && vector2.Y > vector1.Y)) 
+                    PrimitiveDrawing.DrawLineList(points, Color.White);                
+            }
 
             return false; // Stop vanilla draw code from running
         }
+
+        //public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        //{
+        //    //ApparentlyThisHelps();
+        //    //spriteBatch.End();
+        //    if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+
+
+        //    for (int k = 0; k < StoredConnections(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
+        //    {
+        //        Vector2 vector1 = new Vector2(i * 16, j * 16); // this tile pos
+        //        Vector2 vector2 = new Vector2(StoredConnections(i, j)[k].X * 16, StoredConnections(i, j)[k].Y * 16); // other tile pos
+        //        PrimitiveDrawing.DrawLineList(new Vector2[] { vector1, vector2 }, Color.Red);
+        //    }
+        //    // spriteBatch.Begin();
+        //}
 
         public override bool Drop(int i, int j)
         {
@@ -156,7 +180,7 @@ namespace GSMP.Content.Tiles
         public List<int> ValidTiles = new List<int> { ModContent.TileType<ManaJar>() };
         public int StoredMana;
         public int MaxMana;
-        public List<Point16> StoredConnections = new List<Point16>();
+        public List<Vector2> StoredConnections = new List<Vector2>();
 
         public override bool IsTileValidForEntity(int x, int y)
         {
@@ -172,7 +196,7 @@ namespace GSMP.Content.Tiles
         {
             for (int k = 0; k < StoredConnections.Count; k++)
             {
-                Tile tile = Main.tile[StoredConnections[k].X, StoredConnections[k].Y];
+                Tile tile = Main.tile[(int)StoredConnections[k].X, (int)StoredConnections[k].Y];
                 if (!tile.HasTile || tile.TileType != ModContent.TileType<ManaJar>())
                     StoredConnections.RemoveAt(k);
             }
@@ -187,17 +211,19 @@ namespace GSMP.Content.Tiles
 
         public override void LoadData(TagCompound tag)
         {
+            StoredMana = 0;
             if (tag.ContainsKey("StoredMana")) 
                 StoredMana = tag.Get<int>("StoredMana");
-            else StoredMana = 0;
 
+            StoredConnections = new List<Vector2>();
             if (tag.ContainsKey("StoredConnections"))
-                StoredConnections = tag.Get<List<Point16>>("StoredConnections");
-            else StoredConnections = new List<Point16>();
+            {
+                StoredConnections = tag.Get<List<Vector2>>("StoredConnections");
+            }
 
+            MaxMana = 1;
             if (tag.ContainsKey("MaxMana"))
                 MaxMana = tag.Get<int>("MaxMana");
-            else MaxMana = 1;
         }
     }
 }
