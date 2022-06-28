@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using GraphicsLib.Primitives;
 using Terraria.ID;
 using Terraria.Graphics;
+using GSMP.Content.TileEntities;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -59,6 +60,7 @@ namespace GSMP.Content.Items.Magic
                 }
                 else
                 {
+                    flag1 = false;
                     Main.NewText("B2");
                     //Main.NewText("X1: " + X1.ToString() + " Y1: " + Y1.ToString());
                     //Main.NewText("MX: " + (Main.MouseWorld.X / 16).ToString() + " MY: " + (Main.MouseWorld.Y / 16).ToString());
@@ -73,9 +75,8 @@ namespace GSMP.Content.Items.Magic
                             Main.NewText("D");
                             Vector2 point1 = new Vector2(X1, Y1);
                             Vector2 point2 = new Vector2(X2, Y2);
-                            ManaJar.AddConnection(X2, Y2, point1);
-                            ManaJar.AddConnection(X1, Y1, point2);
-                            flag1 = false;
+                            ManaTEutils.ConnectionsFrom(X2, Y2, point1);
+                            ManaTEutils.ConnectionsTo(X1, Y1, point2);
                         }
                         else
                         {
@@ -99,11 +100,11 @@ namespace GSMP.Content.Items.Magic
             int TileManaMax = 0;
             if (tile.TileType == ModContent.TileType<ManaJar>())
             {
-                TileMana = ManaJar.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
-                TileManaMax = ManaJar.MaxMana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
+                TileMana = ManaTEutils.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
+                TileManaMax = ManaTEutils.MaxMana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
             }
 
-            return tile.TileType == ModContent.TileType<ManaJar>() && TileMana < TileManaMax - Item.mana;
+            return tile.TileType == ModContent.TileType<ManaJar>() && TileMana <= TileManaMax - Item.mana;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -119,7 +120,7 @@ namespace GSMP.Content.Items.Magic
 
                 if (tile.TileType == ModContent.TileType<ManaJar>())
                 {
-                    ManaJar.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16, Item.mana);
+                    ManaTEutils.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16, Item.mana);
                 }
             }
 

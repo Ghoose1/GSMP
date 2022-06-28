@@ -129,7 +129,6 @@ namespace GSMP.Content.Tiles
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             int placedEntity = Place(i - 1, j - 1);
-            //debugTimer = 0;
             return placedEntity;
         }
 
