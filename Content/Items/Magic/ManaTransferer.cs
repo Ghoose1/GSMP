@@ -47,7 +47,7 @@ namespace GSMP.Content.Items.Magic
             }
 
             Tile tile = Main.tile[(int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16];
-            if (tile.HasTile && tile.TileType == ModContent.TileType<ManaJar>())
+            if (tile.HasTile && ManaTEutils.ValidTiles.Contains(tile.TileType))
             {
                 Main.NewText("A");
                 if (!flag1)
@@ -70,7 +70,7 @@ namespace GSMP.Content.Items.Magic
                         int X2 = (int)Main.MouseWorld.X / 16;
                         int Y2 = (int)Main.MouseWorld.Y / 16;
                         Tile tile1 = Main.tile[X1, Y1];
-                        if (tile1.HasTile && tile.TileType == ModContent.TileType<ManaJar>())
+                        if (tile1.HasTile && ManaTEutils.ValidTiles.Contains(tile1.TileType))
                         {
                             Main.NewText("D");
                             Vector2 point1 = new Vector2(X1, Y1);
@@ -98,13 +98,13 @@ namespace GSMP.Content.Items.Magic
 
             int TileMana = 0;
             int TileManaMax = 0;
-            if (tile.TileType == ModContent.TileType<ManaJar>())
+            if (ManaTEutils.ValidTiles.Contains(tile.TileType))
             {
                 TileMana = ManaTEutils.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
                 TileManaMax = ManaTEutils.MaxMana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16);
             }
 
-            return tile.TileType == ModContent.TileType<ManaJar>() && TileMana <= TileManaMax - Item.mana;
+            return ManaTEutils.ValidTiles.Contains(tile.TileType) && TileMana <= TileManaMax - Item.mana;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -118,7 +118,7 @@ namespace GSMP.Content.Items.Magic
             {
                 Tile tile = Main.tile[(int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16];
 
-                if (tile.TileType == ModContent.TileType<ManaJar>())
+                if (ManaTEutils.ValidTiles.Contains(tile.TileType))
                 {
                     ManaTEutils.Mana((int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16, Item.mana);
                 }

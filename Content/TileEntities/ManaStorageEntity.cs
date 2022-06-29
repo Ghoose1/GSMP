@@ -99,7 +99,11 @@ namespace GSMP.Content.TileEntities
 
     public class ManaTEutils
     {
-        public static readonly List<int> ValidTiles = new List<int> { ModContent.TileType<Tiles.ManaJar>() }; // This list should contain every Tile in for magic system
+        // This list should contain every Tile in magic system
+        public static readonly List<int> ValidTiles = new List<int> { 
+            ModContent.TileType<Tiles.ManaJar>(),
+            ModContent.TileType<Tiles.ManaBall>() 
+        }; 
         public static int Mana(int i, int j, int Transfer)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
