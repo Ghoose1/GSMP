@@ -32,13 +32,10 @@ namespace GSMP.Content.Tiles
         public override void PlaceInWorld(int i, int j, Item item) // Placing Tile entity and assigning parameters
         {
             TileEntity.PlaceEntityNet(i, j, ModContent.TileEntityType<ManaStorageEntity>());
-            Main.NewText("Test1");
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity existing))
             {
-                Main.NewText("Test2");
                 if (existing is ManaStorageEntity ModTE)
                 {
-                    Main.NewText("Test3");
                     ModTE.MaxMana = 2000;
                     ModTE.TransferRate = 2;
                 }
@@ -61,11 +58,7 @@ namespace GSMP.Content.Tiles
 
         public override bool RightClick(int i, int j) // Debug stuff
         {
-            if (Main.keyState.PressingShift())
-            {
-                Main.NewText(ManaTEutils.DebugTriggerTransferMana(i, j).ToString());
-            }
-            else
+            if (Main.LocalPlayer.HeldItem.type != ModContent.ItemType<Items.Magic.ManaTransferer>())
             {
                 Main.NewText("Transfer Rate: " + ManaTEutils.TransferRate(i, j));
                 Main.NewText("Connections To:");
@@ -116,8 +109,25 @@ namespace GSMP.Content.Tiles
         public override bool Drop(int i, int j)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+            {
+                ManaIntSource source = new ManaIntSource(i, j, ManaTEutils.Mana(i, j));
+                int item = Item.NewItem(source, new Rectangle(i * 16, j * 16, 0, 0), ModContent.ItemType<Items.Magic.ManaStar>());
+                if (Main.item[item].ModItem is Items.Magic.ManaStar star)
+                {
+                    star.Mana = modEntity.StoredMana;
+                }
                 modEntity.Kill(i, j);
+            }
             return false;
+        }
+    }
+
+    public class ManaIntSource : EntitySource_TileBreak
+    {
+        public int mana;
+        public ManaIntSource(int X, int Y, int mana_, string context = null) : base(X, Y)
+        {
+            mana = mana_;
         }
     }
 }

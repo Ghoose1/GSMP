@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Terraria.ModLoader.IO;
 using Terraria.DataStructures;
 using GraphicsLib.Primitives;
+using Terraria.ID;
 
 namespace GSMP.Content.TileEntities
 {
@@ -29,14 +30,14 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (!tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
                     ConnectionsTo.RemoveAt(k);
             }
 
             for (int k = 0; k < ConnectionsFrom.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsFrom[k].X, (int)ConnectionsFrom[k].Y];
-                if (!tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
                     ConnectionsFrom.RemoveAt(k);
             }
 
@@ -102,8 +103,17 @@ namespace GSMP.Content.TileEntities
         // This list should contain every Tile in magic system
         public static readonly List<int> ValidTiles = new List<int> { 
             ModContent.TileType<Tiles.ManaJar>(),
-            ModContent.TileType<Tiles.ManaBall>() 
-        }; 
+            ModContent.TileType<Tiles.ManaBall>(),
+            ModContent.TileType<Tiles.CelestialMagnet>(),
+        };
+
+        public static readonly List<int> ManaItems = new List<int> {
+            ModContent.ItemType<Items.Magic.ManaStar>(),
+            ItemID.Star,
+            ItemID.SoulCake,
+            ItemID.SugarPlum,
+        };
+
         public static int Mana(int i, int j, int Transfer)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
@@ -137,28 +147,48 @@ namespace GSMP.Content.TileEntities
 
         public static void ConnectionsTo(int i, int j, Vector2 pos)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                modEntity.ConnectionsTo.Add(pos);
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
+            {
+                if (entity is ManaStorageEntity modEntity)
+                    modEntity.ConnectionsTo.Add(pos);
+                else if (entity is ManaMagnetEntity magEntity)
+                    magEntity.ConnectionsTo.Add(pos);
+            }
         }
 
         public static void ConnectionsFrom(int i, int j, Vector2 pos)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                modEntity.ConnectionsFrom.Add(pos);
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
+            {
+                if (entity is ManaStorageEntity modEntity)
+                    modEntity.ConnectionsFrom.Add(pos);
+                else if (entity is ManaMagnetEntity magEntity)
+                    magEntity.ConnectionsFrom.Add(pos);
+            }
         }
 
         public static Vector2[] ConnectionsTo(int i, int j)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                return modEntity.ConnectionsTo.ToArray();
-            else return new Vector2[] { Vector2.Zero };
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
+            {
+                if (entity is ManaStorageEntity modEntity)
+                    return modEntity.ConnectionsTo.ToArray();
+                else if (entity is ManaMagnetEntity magEntity)
+                    return magEntity.ConnectionsTo.ToArray();
+            }
+            return new Vector2[] { Vector2.Zero };
         }
 
         public static Vector2[] ConnectionsFrom(int i, int j)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                return modEntity.ConnectionsFrom.ToArray();
-            else return new Vector2[] { Vector2.Zero };
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
+            {
+                if (entity is ManaStorageEntity modEntity)
+                    return modEntity.ConnectionsFrom.ToArray();
+                else if (entity is ManaMagnetEntity magEntity)
+                    return magEntity.ConnectionsFrom.ToArray();
+            }
+            return new Vector2[] { Vector2.Zero };
         }
 
         public static int DebugTriggerTransferMana(int i, int j)
