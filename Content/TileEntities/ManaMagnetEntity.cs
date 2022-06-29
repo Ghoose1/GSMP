@@ -14,15 +14,17 @@ namespace GSMP.Content.TileEntities
     public class ManaMagnetEntity : ModTileEntity
     {
         public List<Vector2> ConnectionsTo = new(); // Links between these entities 
+        internal int AntiLagTimer;
 
         public override bool IsTileValidForEntity(int x, int y)
         {
             return ManaTEutils.ValidTiles.Contains(Main.tile[x, y].TileType) && Main.tile[x, y].HasTile;
         }
 
-        public override void Update() // Used to check if Tiles this tile is connected to are still active and to transfer mana to linked Entities
+        public override void Update() 
         {
-            for (int k = 0; k < ConnectionsTo.Count; k++)
+            // Making sure linked tiles are active and removing the link if not
+            for (int k = 0; k < ConnectionsTo.Count; k++) 
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
                 if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
@@ -67,23 +69,23 @@ namespace GSMP.Content.TileEntities
         {
             int[] current; 
 
-            // This would indicate that this is the first time TransferMana() is called
+            // This would indicate that this is the first time TransferMana() is called, so setting correct values for changes[] and current[]
             if (previous == null) 
             {
                 // Making the changes array blank, cus no changes have been made yet.
                 changes = new int[ConnectionsTo.Count];
 
-                // Making a blank array then assigning the starting mana values to it
+                // Assigning the starting mana values to current
                 current = new int[ConnectionsTo.Count];
                 for (int k = 0; k < ConnectionsTo.Count; k++)
                     current[k] = ManaTEutils.Mana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y);
             }
-            else current = previous; // If it isnt the first time, then current mana values will be the mana values after the previous call of TransferMana()
+            else current = previous;
 
-            // average is the amount that would ideally be added to the current mana values
+            // Default amount to try to add
             int average = (int)Math.Floor(num / (float)ConnectionsTo.Count);
 
-            // remainder is the mana that is not accounted for, so should be distributed one at a time.
+            // Gets distributed separately to the bulk of the mana
             int remainder = num % ConnectionsTo.Count; 
 
             for (int k = 0; k < current.Length; k++) // modifying the current and change values
