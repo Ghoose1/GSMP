@@ -97,6 +97,12 @@ namespace GSMP.Content.Items.Magic
             return false;
         }
 
+        public override void HoldItem(Player player)
+        {
+            Vector2[] points = new Vector2[] { Main.MouseWorld.ToWorldCoordinates(), player.position.ToWorldCoordinates()/*new Vector2(X1 * 16, Y1 * 16)*/ };
+            PrimitiveDrawing.DrawLineStrip(points, Color.Blue, Color.White);
+        }
+
         public override bool CanUseItem(Player player)
         {
             //Tile tile = Main.tile[(int)Main.MouseWorld.X / 16, (int)Main.MouseWorld.Y / 16];

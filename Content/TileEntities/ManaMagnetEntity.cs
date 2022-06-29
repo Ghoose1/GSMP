@@ -13,13 +13,7 @@ namespace GSMP.Content.TileEntities
 {
     public class ManaMagnetEntity : ModTileEntity
     {
-
-        public int MaxMana; // MaxMana and TransferRate are set by the tile creating the entity and not modified after
-        public int TransferRate; // Mana per tick from this
-
-        public int StoredMana;
         public List<Vector2> ConnectionsTo = new(); // Links between these entities 
-        public List<Vector2> ConnectionsFrom = new();
 
         public override bool IsTileValidForEntity(int x, int y)
         {
@@ -35,51 +29,96 @@ namespace GSMP.Content.TileEntities
                     ConnectionsTo.RemoveAt(k);
             }
 
-            for (int k = 0; k < ConnectionsFrom.Count; k++)
-            {
-                Tile tile = Main.tile[(int)ConnectionsFrom[k].X, (int)ConnectionsFrom[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
-                    ConnectionsFrom.RemoveAt(k);
-            }
-
             foreach (Item item in Main.item)
             {
-                if (ManaTEutils.ManaItems.Contains(item.type))
+                if (ManaTEutils.ManaItems.Contains(item.type) && item.position.DistanceSQ(new Vector2(Position.X * 16 + 12, Position.Y * 16 + 12)) < 6144)
                 {
-                    //Main.NewText($"Distance: {item.position.DistanceSQ(new Vector2(Position.X * 16, Position.Y * 16))}");
-                    //Main.NewText($"Item X: {item.position.X} Y: {item.position.Y} | This X: {Position.X * 16} Y: {Position.Y * 16} | Distance: {item.position.DistanceSQ(new Vector2(Position.X * 16, Position.Y * 16))}");
-                    if (item.position.DistanceSQ(new Vector2(Position.X * 16 + 12, Position.Y * 16 + 12)) < 6144)
+                    if (ConnectionsTo.Count > 0)
                     {
-                        Main.NewText("Test2");
+                        // Assinging this here so that I dont need to get the values every time TransferMana() is Called
+                        int[] maxes = new int[ConnectionsTo.Count];
+                        for (int k = 0; k < ConnectionsTo.Count; k++)
+                            maxes[k] = ManaTEutils.MaxMana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y);
+
                         if (item.type == ItemID.Star || item.type == ItemID.SugarPlum || item.type == ItemID.SoulCake)
-                            TransferMana(100);
-                        else if (item.type == ModContent.ItemType<Items.Magic.ManaStar>())
-                            if (item.ModItem is Items.Magic.ManaStar star)
-                            {
-                                Main.NewText("test3");
-                                TransferMana(star.Mana);
-                            }
-                        item.TurnToAir();
+                            TransferMana(100, maxes);
+
+                        else if (item.type == ModContent.ItemType<Items.Magic.ManaStar>() && item.ModItem is Items.Magic.ManaStar star)
+                            TransferMana(star.Mana, maxes);
                     }
+                    item.TurnToAir();
                 }
             }
         }
 
-        public void TransferMana(int num)
+        public override void SaveData(TagCompound tag)
         {
-            int amount = (int)Math.Floor(num / (float)ConnectionsTo.Count);
-            if (amount * ConnectionsTo.Count > num) return;
-            //Main.NewText(amount.ToString() + " | " + (TransferRate / ConnectionsTo.Count).ToString());
+            if (ConnectionsTo != new List<Vector2>()) tag.Add("ConnectionsTo", ConnectionsTo);
+        }
 
-            for (int k = 0; k < ConnectionsTo.Count; k++)
+        public override void LoadData(TagCompound tag)
+        {
+            ConnectionsTo = new List<Vector2>();
+            if (tag.ContainsKey("ConnectionsTo"))
+                ConnectionsTo = tag.Get<List<Vector2>>("ConnectionsTo");
+        }
+
+        public void TransferMana(int num, int[] maxes, int[] previous = null, int[] changes = null) // This took wayyy too long to make but hopefully is worth it
+        {
+            int[] current; 
+
+            // This would indicate that this is the first time TransferMana() is called
+            if (previous == null) 
             {
-                if (!(ManaTEutils.MaxMana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y) < ManaTEutils.Mana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y) + amount))
+                // Making the changes array blank, cus no changes have been made yet.
+                changes = new int[ConnectionsTo.Count];
+
+                // Making a blank array then assigning the starting mana values to it
+                current = new int[ConnectionsTo.Count];
+                for (int k = 0; k < ConnectionsTo.Count; k++)
+                    current[k] = ManaTEutils.Mana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y);
+            }
+            else current = previous; // If it isnt the first time, then current mana values will be the mana values after the previous call of TransferMana()
+
+            // average is the amount that would ideally be added to the current mana values
+            int average = (int)Math.Floor(num / (float)ConnectionsTo.Count);
+
+            // remainder is the mana that is not accounted for, so should be distributed one at a time.
+            int remainder = num % ConnectionsTo.Count; 
+
+            for (int k = 0; k < current.Length; k++) // modifying the current and change values
+            {
+                if (remainder > 0 && current[k] < maxes[k]) // remainder will always be less than amount of things
                 {
-                    ManaTEutils.Mana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y, amount);
-                    StoredMana -= amount;
+                    changes[k]++;
+                    current[k]++;
+                    remainder--;
+                    num--;
+                }
+                if (current[k] + average <= maxes[k]) // if it can fit the value just add the average / target value
+                {
+                    changes[k] += average;
+                    current[k] += average;
+                    num -= average;
+                }
+                else // if it cant, change the current value to its max value etc.
+                {
+                    changes[k] += maxes[k] - current[k];
+                    num -= maxes[k] - current[k];
+                    current[k] = maxes[k];
                 }
             }
 
+            if (num == 0 || current == previous) // num being zero indicates that mana has been distributed, current == prev indicates that it did not do anything
+            {
+                for (int k = 0; k < current.Length; k++)
+                {
+                    // Applying all the calculated changes
+                    ManaTEutils.Mana((int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y, changes[k]);
+                }
+                return;
+            }
+            else TransferMana(num, current, changes); // Re-running the code with updated changes and mana arrays
         }
     }
 }

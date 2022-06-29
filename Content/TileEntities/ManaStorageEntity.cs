@@ -41,7 +41,7 @@ namespace GSMP.Content.TileEntities
                     ConnectionsFrom.RemoveAt(k);
             }
 
-            if (ConnectionsTo.Count >= 1)
+            if (ConnectionsTo.Count >= 1 && StoredMana >= TransferRate)
                 TransferMana();
         }
 
@@ -158,13 +158,8 @@ namespace GSMP.Content.TileEntities
 
         public static void ConnectionsFrom(int i, int j, Vector2 pos)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
-            {
-                if (entity is ManaStorageEntity modEntity)
-                    modEntity.ConnectionsFrom.Add(pos);
-                else if (entity is ManaMagnetEntity magEntity)
-                    magEntity.ConnectionsFrom.Add(pos);
-            }
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+                modEntity.ConnectionsFrom.Add(pos);
         }
 
         public static Vector2[] ConnectionsTo(int i, int j)
@@ -181,13 +176,8 @@ namespace GSMP.Content.TileEntities
 
         public static Vector2[] ConnectionsFrom(int i, int j)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
-            {
-                if (entity is ManaStorageEntity modEntity)
-                    return modEntity.ConnectionsFrom.ToArray();
-                else if (entity is ManaMagnetEntity magEntity)
-                    return magEntity.ConnectionsFrom.ToArray();
-            }
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+                return modEntity.ConnectionsFrom.ToArray();
             return new Vector2[] { Vector2.Zero };
         }
 

@@ -78,6 +78,24 @@ namespace GSMP.Content.Tiles
             CreateAura(X * 16 + 12, Y * 16 + 12, 64);
         }
 
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Tile tile = Main.tile[i, j];
+            int X = i - (tile.TileFrameX / 18);
+            int Y = j - (tile.TileFrameY / 18);
+
+            for (int k = 0; k < ManaTEutils.ConnectionsTo(X, Y).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            {
+                Vector2 vector2 = new Vector2(ManaTEutils.ConnectionsTo(X, Y)[k].X * 16, ManaTEutils.ConnectionsTo(X, Y)[k].Y * 16);
+                Vector2 vector1 = new Vector2(X * 16, Y * 16);
+
+                Vector2[] points = new Vector2[] { vector1, vector2 };
+
+                PrimitiveDrawing.DrawLineStrip(points, Color.Blue, Color.White);
+            }
+            return true;
+        }
+
         public override bool RightClick(int i, int j) // Debug stuff
         {
             if (Main.LocalPlayer.HeldItem.type != ModContent.ItemType<Items.Magic.ManaTransferer>())
@@ -88,18 +106,13 @@ namespace GSMP.Content.Tiles
                 Main.NewText("Connections To:");
                 for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++)
                     Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsTo(i, j)[k].Y.ToString());
-
-                Main.NewText("Connections From:");
-                for (int k = 0; k < ManaTEutils.ConnectionsFrom(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsFrom(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsFrom(i, j)[k].Y.ToString());
             }
-
             return false;
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaMagnetEntity modEntity)
                 modEntity.Kill(i, j);
             Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ItemID.CelestialMagnet);
         }
