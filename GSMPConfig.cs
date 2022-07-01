@@ -18,11 +18,12 @@ using Terraria.UI;
 
 namespace GSMP
 {
- //   public class GSMPConfig : ModConfig
- //   {
-	//	public override ConfigScope Mode => ConfigScope.ClientSide;
+    public class GSMPConfig : ModConfig
+    {
+        public override ConfigScope Mode => ConfigScope.ClientSide;
 
-	//	[Label("How many frames between mana transfers, set to reduce lag")]
-	//	public int AntiTransLag;
-	//}
+        [DefaultValue(true)]
+        [Label("Debug Mode")]
+        public bool DebugMode;
+    }
 }

@@ -42,6 +42,10 @@ namespace GSMP.Content.Projectiles
         public override string Texture => "GSMP/Assets/Projectile Images/Ball";
         public BaseMagicProjectile ParentProjectile;
 
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            return base.OnTileCollide(oldVelocity);
+        }
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/Projectile Images/" +
