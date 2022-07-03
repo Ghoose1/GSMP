@@ -23,10 +23,5 @@ namespace GSMP.Content.GlobalItems
             MaxMana = TileEntities.NPCMana.ManaByType(npc.type);
             Mana = MaxMana;
         }
-
-        public override void OnKill(NPC npc)
-        {
-            Main.NewText("Test");
-        }
     }
 }

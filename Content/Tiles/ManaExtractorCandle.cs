@@ -81,8 +81,6 @@ namespace GSMP.Content.Tiles
             int X = i - (tile.TileFrameX / 18);
             int Y = j - (tile.TileFrameY / 18);
             CreateAura(X * 16 + 4, Y * 16 + 4, 64);
-            //if (Main.LocalPlayer.position.DistanceSQ(new Vector2(i * 16, j * 16)) < 6144)
-            //    Main.LocalPlayer.AddBuff(ModContent.BuffType<Buffs.ManaRegenNerf>(), 10);
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
@@ -110,7 +108,7 @@ namespace GSMP.Content.Items.Placeable
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Extractor Candle"); 
+            DisplayName.SetDefault("Extractor Orb"); 
         }
 
         public override void SetDefaults()

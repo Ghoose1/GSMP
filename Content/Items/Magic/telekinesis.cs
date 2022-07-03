@@ -6,6 +6,7 @@ using GSMP.Content.Items.Magic;
 using Terraria.Audio;
 using System;
 using Terraria.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -25,10 +26,24 @@ namespace GSMP.Content.Items.Magic
         //}
         public int TileToPlace;
         public Tile tile;
-        public override string Texture => "GSMP/Assets/SpellBookBlue";
+        public override string Texture => "GSMP/Assets/SpellBook";
         public override void SetStaticDefaults()
         {
             Tooltip.SetDefault("Allows the manipulation of basic materials");
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, position, Color.Blue);
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, Item.position, Color.Blue);
+            return false;
         }
 
         public override void SetDefaults()

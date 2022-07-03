@@ -8,12 +8,13 @@ using Terraria.ID;
 using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
 using GSMP.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GSMP.Content.Items
 {
     public class BaseMagicItem : ModItem
     {
-        public override string Texture => "GSMP/Assets/SpellBookRed";
+        public override string Texture => "GSMP/Assets/SpellBook";
         public override string Name => "Custom Magic Item";
 
         // // Formation variables:
@@ -90,6 +91,20 @@ namespace GSMP.Content.Items
             Item.useStyle = item.itemStats[6];
             Item.useTime = item.itemStats[7];
             Item.useAnimation = item.itemStats[8];
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, position, Color.Red);
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, Item.position, Color.Red);
+            return false;
         }
 
         public override void SaveData(TagCompound tag)

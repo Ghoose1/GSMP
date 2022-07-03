@@ -14,7 +14,7 @@ namespace GSMP.Content.Items.Placeable
 {
     public class ManaBallItem : ModItem // ManaBall means like crystal ball not a ball of mana thing
     {
-        public override string Texture => "GSMP/Assets/ManaJarItem";
+        public override string Texture => $"Terraria/Images/Item_{ItemID.CrystalBall}";
 
         public override void SetDefaults()
         {

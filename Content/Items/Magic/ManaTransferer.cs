@@ -7,12 +7,13 @@ using GraphicsLib.Primitives;
 using Terraria.ID;
 using Terraria.Graphics;
 using GSMP.Content.TileEntities;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GSMP.Content.Items.Magic
 {
     public class ManaTransferer : ModItem
     {
-        public override string Texture => "GSMP/Assets/SpellBookPink";
+        public override string Texture => "GSMP/Assets/SpellBook";
         internal bool flag1;
         internal int X1;
         internal int Y1;
@@ -28,12 +29,26 @@ namespace GSMP.Content.Items.Magic
             Item.autoReuse = true;
         }
 
-        public override void UpdateInventory(Player player)
+        //public override void UpdateInventory(Player player)
+        //{
+        //    if (player.HeldItem.type != ModContent.ItemType<ManaTransferer>())
+        //    {
+        //        flag1 = false;
+        //    }
+        //}
+
+        //public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        //{
+        //    Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+        //    spriteBatch.Draw(texture, position, Color.Pink);
+        //    return false;
+        //}
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            if (player.HeldItem.type != ModContent.ItemType<ManaTransferer>())
-            {
-                flag1 = false;
-            }
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, Item.position, Color.Pink);
+            return false;
         }
 
         public override bool AltFunctionUse(Player player)

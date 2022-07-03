@@ -19,7 +19,7 @@ namespace GSMP.Content.TileEntities
                 NPCID.Tim => 1000,
                 NPCID.RuneWizard => 5000,
                 NPCID.DarkCaster => 500,
-                _ => 100,
+                _ => 20,
             };
         }
     }

@@ -12,7 +12,7 @@ namespace GSMP.Content.Items.Placeable
 {
 	public class FormationStandItem : ModItem
 	{
-		public override string Texture => "GSMP/Assets/FormationStandItem";
+		public override string Texture => $"Terraria/Images/Item_{ItemID.DD2ElderCrystalStand}";
         public override void SetStaticDefaults()
 		{
 			Tooltip.SetDefault("Idfk lol");

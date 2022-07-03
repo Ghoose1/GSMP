@@ -7,7 +7,7 @@ namespace GSMP.Content.Items.Magic
 {
     public class ManaStar : ModItem
     {
-        public override string Texture => "GSMP/Assets/Star";
+        public override string Texture => $"Terraria/Images/Item_{ItemID.Star}";
 
         public int Mana;
 

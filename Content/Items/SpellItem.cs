@@ -14,7 +14,7 @@ namespace GSMP.Content.Items
     public class SpellItem : ModItem
     {
         internal Spell spell;
-        public override string Texture => "GSMP/Assets/SpellBookGreen";
+        public override string Texture => "GSMP/Assets/SpellBook";
         public SpellItem()
         {
             spell = new Spell("Default");

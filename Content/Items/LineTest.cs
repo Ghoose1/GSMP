@@ -32,7 +32,7 @@ namespace GSMP.Content.Items
 
     public class LineTest : ModItem
     {
-        public override string Texture => "GSMP/Assets/SpellBookOrange";
+        public override string Texture => "GSMP/Assets/SpellBook";
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
@@ -45,6 +45,20 @@ namespace GSMP.Content.Items
             Item.rare = ItemRarityID.LightPurple;
             Item.value = 180000;
             Item.accessory = true;
+        }
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, position, Color.Orange);
+            return false;
+        }
+
+        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        {
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+            spriteBatch.Draw(texture, Item.position, Color.Orange);
+            return false;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

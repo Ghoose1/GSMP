@@ -13,7 +13,7 @@ namespace GSMP.Content.Items.Placeable
 {
     public class ManaJarItem : ModItem // Man Ajar
     {
-        public override string Texture => "GSMP/Assets/ManaJarItem";
+        public override string Texture => $"Terraria/Images/Item_{ItemID.Bottle}";
 
         public override void SetDefaults()
         {
@@ -106,7 +106,7 @@ namespace GSMP.Content.Tiles
             return false; // Stop vanilla draw code from running
         } 
 
-        public override bool Drop(int i, int j)
+        public override bool Drop(int i, int j) // This needs fixing makes no sence
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
             {
