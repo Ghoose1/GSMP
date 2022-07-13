@@ -30,39 +30,43 @@ namespace GSMP.Content.Tiles
 
         public override void SetStaticDefaults()
         {
-            Main.tileSolid[Type] = false;
-            Main.tileFlame[Type] = true;
             Main.tileLighted[Type] = true;
+            Main.tileSolid[Type] = false;
+
             TileObjectData.newTile.CopyFrom(TileObjectData.StyleOnTable1x1);
+            TileObjectData.addTile(Type);
         }
 
         public override bool RightClick(int i, int j)
         {
             Player player = Main.LocalPlayer;
             Item item = player.HeldItem;
-
-            if (GetType(i, j) != 0) Item.NewItem(new EntitySource_TileInteraction(player, i, j), new Rectangle(i * 16, j * 16, 8, 8), GetType(i, j));
-
-            if (IsPotion(item))
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE TE)
             {
-                SetType(i, j, item.type);
-                SetBuff(i, j, item.buffType);
+                if (TE.itemtype != 0) Item.NewItem(new EntitySource_TileInteraction(player, i, j), new Rectangle(i * 16, j * 16, 8, 8), TE.itemtype);
 
-                Color col = TileEntities.ManaTEutils.PotionColor(item.type);
-                col.A = 75;
-                SetColor(i, j, col); // Store color in TE, not saved
+                if (IsPotion(item))
+                {
+                    TE.itemtype = item.type;
+                    TE.buff = item.buffType;
 
-                if (item.stack > 1)
-                    item.stack--;
-                else item.TurnToAir();
+                    Color col = TileEntities.ManaTEutils.PotionColor(item.type);
 
-                return true;
+                    TE.color = col; // Store color in TE, not saved
+
+                    if (item.stack > 1)
+                        item.stack--;
+                    else item.TurnToAir();
+
+                    return true;
+                }
+
+                TE.itemtype = 0;
+                TE.buff = 0;
             }
-
-            SetType(i, j, 0);
-            SetBuff(i, j, 0);
             return false;
         }
+
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             if (GetType(i, j) != 0)
@@ -84,27 +88,29 @@ namespace GSMP.Content.Tiles
                 TileLoader.SetDrawPositions(i, j, ref width, ref offsetY, ref height, ref frameX, ref frameY);
 
                 Vector2 zero = Main.drawToScreen ? Vector2.Zero  : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Color color = GetColor(i, j);
 
                 spriteBatch.Draw(FlameTexture,
                                  new Vector2(i * 16 - (int)Main.screenPosition.X + shakeX - 1, j * 16 - (int)Main.screenPosition.Y + offsetY + shakeY - 4) + zero,
                                  new Rectangle(0, 0, 18, 22),
-                                 GetColor(i, j),
+                                 color,
                                  0f,
                                  default,
                                  1.15f,
                                  SpriteEffects.None,
                                  1f);
+
             }
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            Tile tile = Main.tile[i, j];
-            if (tile.TileFrameX == 0)
+            if (GetType(i, j) != 0)
             {
-                r = 0f;
-                g = 0.35f;
-                b = 0.8f;
+                Color c = GetColor(i, j);
+                r = c.R / 255;
+                g = c.G / 255;
+                b = c.B / 255;
             }
         }
 
@@ -112,12 +118,10 @@ namespace GSMP.Content.Tiles
         {
             Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/CandleTile").Value;
 
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange); // These two lines are from some example tile, i dont entirely understand them.
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y - 4) + zero;
-            Color color = GetColor(i, j);
-            color.A = 255;
-            spriteBatch.Draw(texture, Pos, new Rectangle(0, 14, 14, 8), color, 0f, new Vector2(0, -14), 1f, SpriteEffects.None, 0f);
-            //spriteBatch.Draw(texture, Pos, new Rectangle(GetType(i, j) != 0 ? 0 : 18, 0, 16, 20), color, 0f, default, 1f, SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(texture, Pos, new Rectangle(0, 0, 16, 20), Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
             return false;
         }
 

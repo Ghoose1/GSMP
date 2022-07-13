@@ -9,12 +9,17 @@ namespace GSMP.Content.TileEntities
 {
     public class ManaTEutils
     {
-        // This list should contain every Tile in magic system
+        // This list should contain every mana Tile in magic system
         public static readonly List<int> ValidTiles = new List<int> {
             ModContent.TileType<Tiles.ManaJar>(),
             ModContent.TileType<Tiles.ManaBall>(),
             ModContent.TileType<Tiles.CelestialMagnet>(),
             ModContent.TileType<Tiles.ManaExtractorCandle>(),
+        };
+
+        public static readonly List<int> RitualCores = new List<int>
+        {
+            ModContent.TileType<Tiles.RitualCore>(),
         };
 
         public static readonly List<int> ManaItems = new List<int> {
