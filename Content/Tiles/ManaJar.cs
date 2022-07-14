@@ -84,14 +84,14 @@ namespace GSMP.Content.Tiles
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("GSMP/Assets/ManaJar").Value;
+            Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
 
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange); // These two lines are from some example tile, i dont entirely understand them.
             Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
 
-            int frameX = (int)Math.Floor((float)(ManaTEutils.Mana(i, j) / (ManaTEutils.MaxMana(i, j) / 5))); // Making the sprite change
+            int frameX = (int)Math.Floor((float)(ManaTEutils.Mana(i, j) / (ManaTEutils.MaxMana(i, j) / 5))); // Making the sprite change depending on mana
 
-            spriteBatch.Draw( texture, Pos, new Rectangle(frameX * 18, 0, 16, 16), Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Pos, new Rectangle(frameX * 18, 0, 16, 16), Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
 
             for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
             {
@@ -106,17 +106,17 @@ namespace GSMP.Content.Tiles
             return false; // Stop vanilla draw code from running
         } 
 
-        public override bool Drop(int i, int j) // This needs fixing makes no sence
+        public override bool Drop(int i, int j) // Kills The TE and drops a star if it had mana
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+            ManaStorageEntity TE = ManaTEutils.modEntity(i, j);
+            if (TE != null)
             {
-                ManaIntSource source = new ManaIntSource(i, j, ManaTEutils.Mana(i, j));
-                int item = Item.NewItem(source, new Rectangle(i * 16, j * 16, 0, 0), ModContent.ItemType<Items.Magic.ManaStar>());
-                if (Main.item[item].ModItem is Items.Magic.ManaStar star)
+                if (TE.StoredMana != 0)
                 {
-                    star.Mana = modEntity.StoredMana;
+                    ManaIntSource source = new ManaIntSource(i, j, TE.StoredMana);
+                    Item.NewItem(source, new Rectangle(i * 16, j * 16, 0, 0), ModContent.ItemType<Items.Magic.ManaStar>());
                 }
-                modEntity.Kill(i, j);
+                TE.Kill(i, j);
             }
             return false;
         }

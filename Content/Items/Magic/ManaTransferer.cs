@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.Graphics;
 using GSMP.Content.TileEntities;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria.ObjectData;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -60,59 +61,46 @@ namespace GSMP.Content.Items.Magic
 
                 Main.NewText(Item.mana.ToString());
             }
+
             int i = (int)Main.MouseWorld.X / 16;
             int j = (int)Main.MouseWorld.Y / 16;
             Tile tile = Main.tile[i, j];
-            int X = i - (tile.TileFrameX / 18);
-            int Y = j - (tile.TileFrameY / 18);
+
+            //int X = i;
+            //int Y = j;
+
+            TileObjectData data = TileObjectData.GetTileData(tile.TileType, 0);
+            if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
+            {
+                i -= (tile.TileFrameX / 18);
+                j -= (tile.TileFrameY / 18);
+            }
 
             if (tile.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
             {
-                //Main.NewText("A");
                 if (!flag1)
                 {
                     Main.NewText("Tile Selected");
-                    X1 = X;
-                    Y1 = Y;
-                    //Main.NewText("X1: " + X1.ToString() + " Y1: " + Y1.ToString());
+                    X1 = i;
+                    Y1 = j;
                     flag1 = true;
                 }
                 else
                 {
-                    //Main.NewText("B2");
-                    //Main.NewText("X1: " + X1.ToString() + " Y1: " + Y1.ToString());
-                    //Main.NewText("MX: " + (Main.MouseWorld.X / 16).ToString() + " MY: " + (Main.MouseWorld.Y / 16).ToString());
-                    if (X != X1 || Y != Y1)
+                    if ((i != X1 || j != Y1) && Main.tile[X1, Y1].HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
                     {
-                        //Main.NewText("C");
-                        int X2 = X;
-                        int Y2 = Y;
-                        Tile tile1 = Main.tile[X1, Y1];
-                        if (tile1.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
-                        {
-                            Main.NewText("Connection Created");
-
-                            Main.NewText("A");
-                            if (TileEntity.ByPosition.TryGetValue(new Point16(X2, Y2), out TileEntity entity))
-                            {
-                                ManaStorageEntity TE = entity as ManaStorageEntity;
-                                TE.ConnectionsFrom.Add(new Vector2(X1, Y1));
-                                //if (entity is PotionBurnerTE PotTE)
-                                //    PotTE.ConnectionsFrom.Add(new Vector2(X1, Y1));
-                            }
-                            //ManaStorageEntity TE1 = ManaTEutils.modEntity(X2, Y2);
-
-                            ManaStorageEntity TE2 = ManaTEutils.modEntity(X1, Y1);
-                            TE2.ConnectionsTo.Add(new Vector2(X2, Y2));
-                            flag1 = false;
-                        }
-                        else
-                        {
-                            //Main.NewText("D2");
-                            X1 = X;
-                            Y1 = Y;
-                            flag1 = true;
-                        }
+                        Main.NewText("Connection Created");
+                        Vector2 point1 = new Vector2(X1, Y1);
+                        Vector2 point2 = new Vector2(i, j);
+                        ManaTEutils.ConnectionsFrom(i, j, point1);
+                        ManaTEutils.ConnectionsTo(X1, Y1, point2);
+                        flag1 = false;
+                    }
+                    else
+                    {
+                        X1 = i;
+                        Y1 = j;
+                        flag1 = true;
                     }
                 }
             }

@@ -137,19 +137,15 @@ namespace GSMP.Content.TileEntities
 
         public static void ConnectionsTo(int i, int j, Vector2 pos)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity))
-            {
-                if (entity is ManaStorageEntity modEntity)
-                    modEntity.ConnectionsTo.Add(pos);
-                else if (entity is ManaMagnetEntity magEntity)
-                    magEntity.ConnectionsTo.Add(pos);
-            }
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+                modEntity.ConnectionsTo.Add(pos);
+            else Main.NewText("Error in ConnectionsTo");
         }
 
         public static void ConnectionsFrom(int i, int j, Vector2 pos)
         {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
-                modEntity.ConnectionsFrom.Add(pos);
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity ManaTE)
+                    ManaTE.ConnectionsFrom.Add(pos);
         }
 
         public static Vector2[] ConnectionsTo(int i, int j)
