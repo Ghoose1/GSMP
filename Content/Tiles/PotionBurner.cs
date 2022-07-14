@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GSMP.Content.TileEntities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -14,16 +15,22 @@ namespace GSMP.Content.Tiles
     {
         public override string Texture => "GSMP/Assets/CandleTile";
 
-        public override void PlaceInWorld(int i, int j, Item item) => TileEntity.PlaceEntityNet(i, j, ModContent.TileEntityType<PotionBurnerTE>());
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            TileEntity.PlaceEntityNet(i, j, ModContent.TileEntityType<PotionBurnerTE>());
+            PotionBurnerTE TE = modEntity(i, j);
+            TE.MaxMana = 5000;
+        }
 
         public override bool Drop(int i, int j)
         {
             Item.NewItem(new EntitySource_TileBreak(i, j), new Rectangle(i * 16, j * 16, 8, 8), ModContent.ItemType<PotionBurnerItem>());
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
+            PotionBurnerTE TE = modEntity(i, j);
+            if (TE != null)
             {
-                if (modEntity.itemtype != 0)
-                    Item.NewItem(new EntitySource_TileBreak(i, j), new Rectangle(i * 16, j * 16, 8, 8), modEntity.itemtype);
-                modEntity.Kill(i, j);
+                if (TE.itemtype != 0)
+                    Item.NewItem(new EntitySource_TileBreak(i, j), new Rectangle(i * 16, j * 16, 8, 8), TE.itemtype);
+                TE.Kill(i, j);
             }
             return false;
         }
@@ -37,13 +44,28 @@ namespace GSMP.Content.Tiles
             TileObjectData.addTile(Type);
         }
 
+        public override void MouseOverFar(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = ModContent.ItemType<Items.Placeable.ManaJarItem>();
+            player.cursorItemIconText = "  Mana: " + ManaTEutils.Mana(i, j).ToString() + " / " + ManaTEutils.MaxMana(i, j).ToString();
+        }
+
         public override bool RightClick(int i, int j)
         {
             Player player = Main.LocalPlayer;
             Item item = player.HeldItem;
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE TE)
+            PotionBurnerTE TE = modEntity(i, j);
+            if (TE != null)
             {
-                if (TE.itemtype != 0) Item.NewItem(new EntitySource_TileInteraction(player, i, j), new Rectangle(i * 16, j * 16, 8, 8), TE.itemtype);
+                if (TE.itemtype != 0)
+                {
+                    Item.NewItem(new EntitySource_TileInteraction(player, i, j), new Rectangle(i * 16, j * 16, 8, 8), TE.itemtype);
+                    TE.itemtype = 0;
+                    TE.buff = 0;
+                }
 
                 if (IsPotion(item))
                 {
@@ -69,7 +91,8 @@ namespace GSMP.Content.Tiles
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (GetType(i, j) != 0)
+            PotionBurnerTE TE = modEntity(i, j);
+            if (TE != null && TE.buff != 0)
             {
                 Texture2D FlameTexture = ModContent.Request<Texture2D>("GSMP/Content/Tiles/FlameTexture").Value;
 
@@ -87,7 +110,7 @@ namespace GSMP.Content.Tiles
 
                 TileLoader.SetDrawPositions(i, j, ref width, ref offsetY, ref height, ref frameX, ref frameY);
 
-                Vector2 zero = Main.drawToScreen ? Vector2.Zero  : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                 Color color = GetColor(i, j);
 
                 spriteBatch.Draw(FlameTexture,
@@ -132,28 +155,35 @@ namespace GSMP.Content.Tiles
             player.cursorItemIconID = GetType(i, j) == 0 ? ItemID.WaterCandle : GetType(i, j);
         }
 
+        internal int timer; // This can be the same for every tile
+
         public override void NearbyEffects(int i, int j, bool closer)
         {
             Player player = Main.LocalPlayer;
-            if (player.active && !player.dead && !player.ghost)
+            PotionBurnerTE PotTE = modEntity(i, j);
+            ManaStorageEntity ManaTE = ManaTEutils.modEntity(i, j);
+            if (player.active && !player.dead && !player.ghost && PotTE != null && ManaTE != null && !PotTE.inactiveWithFlame && ManaTE.StoredMana != 0 && timer == 30)
             {
-                int buff = GetBuff(i, j);
-                player.AddBuff(buff, 30);
+                timer = 0;
+                player.AddBuff(PotTE.buff, 30);
+                ManaTE.StoredMana--;
             }
+            else timer++;
         }
 
         #region TE methods
+        public static PotionBurnerTE modEntity(int i, int j)
+        {
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
+                return modEntity;
+            else return null;
+        }
+
         public static int GetBuff(int i, int j)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
                 return modEntity.buff;
             else return 0;
-        }
-
-        public static void SetBuff(int i, int j, int value)
-        {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
-                modEntity.buff = value;
         }
 
         public static int GetType(int i, int j)
@@ -163,23 +193,11 @@ namespace GSMP.Content.Tiles
             else return 0;
         }
 
-        public static void SetType(int i, int j, int type)
-        {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
-                modEntity.itemtype = type;
-        }
-
         public static Color GetColor(int i, int j)
         {
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
                 return modEntity.color;
             else return Color.White;
-        }
-
-        public static void SetColor(int i, int j, Color color)
-        {
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is PotionBurnerTE modEntity)
-                modEntity.color = color;
         }
         #endregion
 
@@ -200,19 +218,28 @@ namespace GSMP.Content.Tiles
             Item.createTile = ModContent.TileType<PotionBurner>();
         }
     }
+}
 
-    public class PotionBurnerTE : ModTileEntity
+namespace GSMP.Content.TileEntities
+{
+    public class PotionBurnerTE : ManaStorageEntity
     {
         public int itemtype;
         public int buff;
         public Color color;
+        public bool inactiveWithFlame;
 
-        public override bool IsTileValidForEntity(int x, int y) => Main.tile[x, y].TileType == ModContent.TileType<PotionBurner>();
+        public override bool IsTileValidForEntity(int x, int y) => Main.tile[x, y].TileType == ModContent.TileType<Tiles.PotionBurner>();
 
         public override void SaveData(TagCompound tag)
         {
             if (itemtype != 0) tag.Add("itemtype", itemtype);
             if (buff != 0) tag.Add("buff", buff);
+
+            if (MaxMana != 1) tag.Add("MaxMana", MaxMana);
+
+            if (StoredMana != 0) tag.Add("StoredMana", StoredMana);
+            tag.Add("ConnectionsFrom", ConnectionsFrom);
         }
 
         public override void LoadData(TagCompound tag)
@@ -221,12 +248,24 @@ namespace GSMP.Content.Tiles
             if (tag.ContainsKey("itemtype"))
                 itemtype = tag.Get<int>("itemtype");
 
-            color = TileEntities.ManaTEutils.PotionColor(itemtype);
+            color = ManaTEutils.PotionColor(itemtype);
             color.A = 75;
 
             buff = 0;
             if (tag.ContainsKey("buff"))
                 buff = tag.Get<int>("buff");
+
+            MaxMana = 1;
+            if (tag.ContainsKey("MaxMana"))
+                MaxMana = tag.Get<int>("MaxMana");
+
+            StoredMana = 0;
+            if (tag.ContainsKey("StoredMana"))
+                StoredMana = tag.Get<int>("StoredMana");
+
+            ConnectionsFrom = new List<Vector2>();
+            if (tag.ContainsKey("ConnectionsFrom"))
+                ConnectionsFrom = tag.Get<List<Vector2>>("ConnectionsFrom");
         }
     }
 }

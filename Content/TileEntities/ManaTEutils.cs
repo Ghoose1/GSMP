@@ -10,16 +10,26 @@ namespace GSMP.Content.TileEntities
     public class ManaTEutils
     {
         // This list should contain every mana Tile in magic system
-        public static readonly List<int> ValidTiles = new List<int> {
+        public static readonly List<int> Manastorage = new List<int> {
             ModContent.TileType<Tiles.ManaJar>(),
             ModContent.TileType<Tiles.ManaBall>(),
+        };
+
+        public static readonly List<int> ManaInput = new List<int>
+        {
             ModContent.TileType<Tiles.CelestialMagnet>(),
             ModContent.TileType<Tiles.ManaExtractorCandle>(),
         };
 
+        public static readonly List<int> ManaOutput = new List<int> {
+            ModContent.TileType<Tiles.PotionBurner>(),
+        };
+
+        public static bool IsConnectionValid(int type) => Manastorage.Contains(type) || ManaInput.Contains(type) || ManaOutput.Contains(type);
+
         public static readonly List<int> RitualCores = new List<int>
         {
-            ModContent.TileType<Tiles.RitualCore>(),
+            ModContent.TileType<Tiles.PeaceRC>(),
         };
 
         public static readonly List<int> ManaItems = new List<int> {
@@ -85,6 +95,13 @@ namespace GSMP.Content.TileEntities
                 ItemID.WrathPotion => Color.DarkRed,
                 _ => Color.White
             };
+        }
+
+        public static ManaStorageEntity modEntity(int i, int j)
+        {
+            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is ManaStorageEntity modEntity)
+                return modEntity;
+            else return null;
         }
 
         public static int Mana(int i, int j, int Transfer)

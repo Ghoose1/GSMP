@@ -36,7 +36,7 @@ namespace GSMP.Content.Tiles
             {
                 if (existing is ManaStorageEntity ModTE)
                 {
-                    ModTE.MaxMana = 100;
+                    ModTE.MaxMana = 1000;
                     ModTE.TransferRate = 2;
                 }
             }

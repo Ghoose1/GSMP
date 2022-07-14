@@ -22,7 +22,7 @@ namespace GSMP.Content.TileEntities
 
         public override bool IsTileValidForEntity(int x, int y)
         {
-            return ManaTEutils.ValidTiles.Contains(Main.tile[x, y].TileType) && Main.tile[x, y].HasTile;
+            return ManaTEutils.IsConnectionValid(Main.tile[x, y].TileType) && Main.tile[x, y].HasTile;
         }
 
         public override void Update() // Used to check if Tiles this tile is connected to are still active and to transfer mana to linked Entities
@@ -30,14 +30,14 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (tile == null || !tile.HasTile/* || !ManaTEutils.IsConnectionValid(tile.TileType)*/)
                     ConnectionsTo.RemoveAt(k);
             }
 
             for (int k = 0; k < ConnectionsFrom.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsFrom[k].X, (int)ConnectionsFrom[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (tile == null || !tile.HasTile || !ManaTEutils.IsConnectionValid(tile.TileType))
                     ConnectionsFrom.RemoveAt(k);
             }
 

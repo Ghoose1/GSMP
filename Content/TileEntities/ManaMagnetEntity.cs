@@ -15,7 +15,7 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (tile == null || !tile.HasTile || !ManaTEutils.IsConnectionValid(tile.TileType))
                     ConnectionsTo.RemoveAt(k);
             }
 

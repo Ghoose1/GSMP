@@ -66,7 +66,7 @@ namespace GSMP.Content.Items.Magic
             int X = i - (tile.TileFrameX / 18);
             int Y = j - (tile.TileFrameY / 18);
 
-            if (tile.HasTile && ManaTEutils.ValidTiles.Contains(tile.TileType))
+            if (tile.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
             {
                 //Main.NewText("A");
                 if (!flag1)
@@ -88,13 +88,22 @@ namespace GSMP.Content.Items.Magic
                         int X2 = X;
                         int Y2 = Y;
                         Tile tile1 = Main.tile[X1, Y1];
-                        if (tile1.HasTile && ManaTEutils.ValidTiles.Contains(tile1.TileType))
+                        if (tile1.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
                         {
                             Main.NewText("Connection Created");
-                            Vector2 point1 = new Vector2(X1, Y1);
-                            Vector2 point2 = new Vector2(X2, Y2);
-                            ManaTEutils.ConnectionsFrom(X2, Y2, point1);
-                            ManaTEutils.ConnectionsTo(X1, Y1, point2);
+
+                            Main.NewText("A");
+                            if (TileEntity.ByPosition.TryGetValue(new Point16(X2, Y2), out TileEntity entity))
+                            {
+                                ManaStorageEntity TE = entity as ManaStorageEntity;
+                                TE.ConnectionsFrom.Add(new Vector2(X1, Y1));
+                                //if (entity is PotionBurnerTE PotTE)
+                                //    PotTE.ConnectionsFrom.Add(new Vector2(X1, Y1));
+                            }
+                            //ManaStorageEntity TE1 = ManaTEutils.modEntity(X2, Y2);
+
+                            ManaStorageEntity TE2 = ManaTEutils.modEntity(X1, Y1);
+                            TE2.ConnectionsTo.Add(new Vector2(X2, Y2));
                             flag1 = false;
                         }
                         else
@@ -129,13 +138,13 @@ namespace GSMP.Content.Items.Magic
 
             int TileMana = 0;
             int TileManaMax = 0;
-            if (ManaTEutils.ValidTiles.Contains(tile.TileType))
+            if (ManaTEutils.IsConnectionValid(tile.TileType))
             {
                 TileMana = ManaTEutils.Mana(X, Y);
                 TileManaMax = ManaTEutils.MaxMana(X, Y);
             }
 
-            return ManaTEutils.ValidTiles.Contains(tile.TileType) && TileMana <= TileManaMax - Item.mana;
+            return ManaTEutils.IsConnectionValid(tile.TileType) && TileMana <= TileManaMax - Item.mana;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -153,9 +162,10 @@ namespace GSMP.Content.Items.Magic
                 int X = i - (tile.TileFrameX / 18);
                 int Y = j - (tile.TileFrameY / 18);
 
-                if (ManaTEutils.ValidTiles.Contains(tile.TileType))
+                if (ManaTEutils.IsConnectionValid(tile.TileType))
                 {
-                    ManaTEutils.Mana(X, Y, Item.mana);
+                    ManaStorageEntity TE = ManaTEutils.modEntity(i, j);
+                    TE.StoredMana += Item.mana;
                 }
             }
 
