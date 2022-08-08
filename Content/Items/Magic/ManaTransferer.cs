@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.Graphics;
 using GSMP.Content.TileEntities;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria.ObjectData;
 
 namespace GSMP.Content.Items.Magic
 {
@@ -60,59 +61,63 @@ namespace GSMP.Content.Items.Magic
 
                 Main.NewText(Item.mana.ToString());
             }
+
             int i = (int)Main.MouseWorld.X / 16;
             int j = (int)Main.MouseWorld.Y / 16;
             Tile tile = Main.tile[i, j];
-            int X = i - (tile.TileFrameX / 18);
-            int Y = j - (tile.TileFrameY / 18);
 
-            if (tile.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
+            //int X = i;
+            //int Y = j;
+
+            //TileObjectData data = TileObjectData.GetTileData(tile.TileType, 0);
+            //if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
+            //{
+            //    i -= (tile.TileFrameX / 18);
+            //    j -= (tile.TileFrameY / 18);
+            //}
+
+            TileObjectData data = TileObjectData.GetTileData(tile);
+            if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
             {
-                //Main.NewText("A");
+                int tileFrameX = tile.TileFrameX; // i should improve this code
+                int tileFrameY = tile.TileFrameY;
+                tileFrameX %= data.CoordinateFullWidth;
+                tileFrameY %= data.CoordinateFullHeight;
+                i -= (tileFrameX / 18);
+                j -= (tileFrameY / 18);
+                tile = Main.tile[i, j];
+                //Main.NewText($"Height: {tileFrameY / 18}, Width: {tileFrameX / 18}");
+                //sMain.NewText($"X: {i} Y: {j} Type: {tile.TileType}");
+            }
+
+            if (tile.HasTile && TEutils.IsConnectionValid(tile.TileType))
+            {
                 if (!flag1)
                 {
                     Main.NewText("Tile Selected");
-                    X1 = X;
-                    Y1 = Y;
-                    //Main.NewText("X1: " + X1.ToString() + " Y1: " + Y1.ToString());
+                    X1 = i;
+                    Y1 = j;
                     flag1 = true;
                 }
                 else
                 {
-                    //Main.NewText("B2");
-                    //Main.NewText("X1: " + X1.ToString() + " Y1: " + Y1.ToString());
-                    //Main.NewText("MX: " + (Main.MouseWorld.X / 16).ToString() + " MY: " + (Main.MouseWorld.Y / 16).ToString());
-                    if (X != X1 || Y != Y1)
+                    if ((i != X1 || j != Y1) && Main.tile[X1, Y1].HasTile && TEutils.IsConnectionValid(tile.TileType))
                     {
-                        //Main.NewText("C");
-                        int X2 = X;
-                        int Y2 = Y;
-                        Tile tile1 = Main.tile[X1, Y1];
-                        if (tile1.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
-                        {
-                            Main.NewText("Connection Created");
+                        Main.NewText("Connection Created");
+                        Vector2 point1 = new Vector2(X1, Y1);
+                        Vector2 point2 = new Vector2(i, j);
 
-                            Main.NewText("A");
-                            if (TileEntity.ByPosition.TryGetValue(new Point16(X2, Y2), out TileEntity entity))
-                            {
-                                ManaStorageEntity TE = entity as ManaStorageEntity;
-                                TE.ConnectionsFrom.Add(new Vector2(X1, Y1));
-                                //if (entity is PotionBurnerTE PotTE)
-                                //    PotTE.ConnectionsFrom.Add(new Vector2(X1, Y1));
-                            }
-                            //ManaStorageEntity TE1 = ManaTEutils.modEntity(X2, Y2);
+                        if (TEutils.TryManaEntity(i, j, out ManaStorageEntity TE)) TE.ConnectionsFrom.Add(point1);
 
-                            ManaStorageEntity TE2 = ManaTEutils.modEntity(X1, Y1);
-                            TE2.ConnectionsTo.Add(new Vector2(X2, Y2));
-                            flag1 = false;
-                        }
-                        else
-                        {
-                            //Main.NewText("D2");
-                            X1 = X;
-                            Y1 = Y;
-                            flag1 = true;
-                        }
+                        if (TEutils.TryManaEntity(X1, Y1, out ManaStorageEntity TE2)) TE2.ConnectionsTo.Add(point2);
+
+                        flag1 = false;
+                    }
+                    else
+                    {
+                        X1 = i;
+                        Y1 = j;
+                        flag1 = true;
                     }
                 }
             }
@@ -133,18 +138,28 @@ namespace GSMP.Content.Items.Magic
             int i = (int)Main.MouseWorld.X / 16;
             int j = (int)Main.MouseWorld.Y / 16;
             Tile tile = Main.tile[i, j];
-            int X = i - (tile.TileFrameX / 18);
-            int Y = j - (tile.TileFrameY / 18);
+
+            TileObjectData data = TileObjectData.GetTileData(tile);
+            if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
+            {
+                int tileFrameX = tile.TileFrameX; // i should improve this code
+                int tileFrameY = tile.TileFrameY;
+                tileFrameX %= data.CoordinateFullWidth;
+                tileFrameY %= data.CoordinateFullHeight;
+                i -= (tileFrameX / 18);
+                j -= (tileFrameY / 18);
+                tile = Main.tile[i, j];
+            }
 
             int TileMana = 0;
             int TileManaMax = 0;
-            if (ManaTEutils.IsConnectionValid(tile.TileType))
+            if (TEutils.IsConnectionValid(tile.TileType) && TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
             {
-                TileMana = ManaTEutils.Mana(X, Y);
-                TileManaMax = ManaTEutils.MaxMana(X, Y);
+                TileMana = TE.StoredMana;
+                TileManaMax = TE.MaxMana;
             }
 
-            return ManaTEutils.IsConnectionValid(tile.TileType) && TileMana <= TileManaMax - Item.mana;
+            return TEutils.IsConnectionValid(tile.TileType) && TileMana <= TileManaMax - Item.mana;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -159,14 +174,21 @@ namespace GSMP.Content.Items.Magic
                 int i = (int)Main.MouseWorld.X / 16;
                 int j = (int)Main.MouseWorld.Y / 16;
                 Tile tile = Main.tile[i, j];
-                int X = i - (tile.TileFrameX / 18);
-                int Y = j - (tile.TileFrameY / 18);
 
-                if (ManaTEutils.IsConnectionValid(tile.TileType))
+                TileObjectData data = TileObjectData.GetTileData(tile);
+                if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
                 {
-                    ManaStorageEntity TE = ManaTEutils.modEntity(i, j);
-                    TE.StoredMana += Item.mana;
+                    int tileFrameX = tile.TileFrameX; // i should improve this code
+                    int tileFrameY = tile.TileFrameY;
+                    tileFrameX %= data.CoordinateFullWidth;
+                    tileFrameY %= data.CoordinateFullHeight;
+                    i -= (tileFrameX / 18);
+                    j -= (tileFrameY / 18);
+                    tile = Main.tile[i, j];
                 }
+
+                if (TEutils.IsConnectionValid(tile.TileType) && TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
+                    TE.StoredMana += Item.mana;
             }
 
             return true;

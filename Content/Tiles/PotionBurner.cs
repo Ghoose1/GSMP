@@ -50,7 +50,7 @@ namespace GSMP.Content.Tiles
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<Items.Placeable.ManaJarItem>();
-            player.cursorItemIconText = "  Mana: " + ManaTEutils.Mana(i, j).ToString() + " / " + ManaTEutils.MaxMana(i, j).ToString();
+            player.cursorItemIconText = "  Mana: " + TEutils.Mana(i, j).ToString() + " / " + TEutils.MaxMana(i, j).ToString();
         }
 
         public override bool RightClick(int i, int j)
@@ -72,7 +72,7 @@ namespace GSMP.Content.Tiles
                     TE.itemtype = item.type;
                     TE.buff = item.buffType;
 
-                    Color col = TileEntities.ManaTEutils.PotionColor(item.type);
+                    Color col = TileEntities.TEutils.PotionColor(item.type);
 
                     TE.color = col; // Store color in TE, not saved
 
@@ -161,8 +161,7 @@ namespace GSMP.Content.Tiles
         {
             Player player = Main.LocalPlayer;
             PotionBurnerTE PotTE = modEntity(i, j);
-            ManaStorageEntity ManaTE = ManaTEutils.modEntity(i, j);
-            if (player.active && !player.dead && !player.ghost && PotTE != null && ManaTE != null && !PotTE.inactiveWithFlame && ManaTE.StoredMana != 0 && timer == 30)
+            if (player.active && !player.dead && !player.ghost && PotTE != null && TEutils.TryManaEntity(i, j, out ManaStorageEntity ManaTE) && !PotTE.inactiveWithFlame && ManaTE.StoredMana != 0 && timer == 30)
             {
                 timer = 0;
                 player.AddBuff(PotTE.buff, 30);
@@ -248,7 +247,7 @@ namespace GSMP.Content.TileEntities
             if (tag.ContainsKey("itemtype"))
                 itemtype = tag.Get<int>("itemtype");
 
-            color = ManaTEutils.PotionColor(itemtype);
+            color = TEutils.PotionColor(itemtype);
             color.A = 75;
 
             buff = 0;

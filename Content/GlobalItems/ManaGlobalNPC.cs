@@ -9,7 +9,7 @@ namespace GSMP.Content.GlobalItems
     {
         public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
         {
-            return TileEntities.ManaTEutils.CanNPCHaveMana(entity);
+            return TileEntities.TEutils.CanNPCHaveMana(entity);
         }
 
         public override bool InstancePerEntity => true;

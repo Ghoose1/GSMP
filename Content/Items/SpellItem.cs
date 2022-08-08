@@ -44,7 +44,7 @@ namespace GSMP.Content.Items
 
         public override bool CanUseItem(Player player)
         {
-            return player.GetModPlayer<SpellPlayer>().canPlaceSpells;
+            return player.GetModPlayer<GSMPPlayer>().canPlaceSpells;
         }
 
         public override bool AltFunctionUse(Player player)

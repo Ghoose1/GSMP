@@ -96,9 +96,9 @@ namespace GSMP.Content.Tiles
             int X = i - (tile.TileFrameX / 18);
             int Y = j - (tile.TileFrameY / 18);
 
-            for (int k = 0; k < ManaTEutils.ConnectionsTo(X, Y).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            for (int k = 0; k < TEutils.ConnectionsTo(X, Y).Length; k++) // For all the connections the tile has, draw a line to the connected node
             {
-                Vector2 vector2 = new Vector2(ManaTEutils.ConnectionsTo(X, Y)[k].X * 16, ManaTEutils.ConnectionsTo(X, Y)[k].Y * 16);
+                Vector2 vector2 = new Vector2(TEutils.ConnectionsTo(X, Y)[k].X * 16, TEutils.ConnectionsTo(X, Y)[k].Y * 16);
                 Vector2 vector1 = new Vector2(X * 16, Y * 16);
 
                 Vector2[] points = new Vector2[] { vector1, vector2 };
@@ -111,7 +111,7 @@ namespace GSMP.Content.Tiles
             Vector2 worldPos = new Point(i, j).ToWorldCoordinates(24f, 64f);
 
             //Color color = Lighting.GetColor(p.X, p.Y);
-            int num = (int)Math.Floor((float)(ManaTEutils.Mana(X, Y) / (ManaTEutils.MaxMana(X, Y) / 254)));
+            int num = (int)Math.Floor((float)(TEutils.Mana(X, Y) / (TEutils.MaxMana(X, Y) / 254)));
             Color color = new Color(255 - num, 255 - num, 255);
 
             Vector2 drawPos = worldPos + offScreen - Main.screenPosition + new Vector2(12f, -48f);
@@ -127,14 +127,18 @@ namespace GSMP.Content.Tiles
                 Tile tile = Main.tile[i, j];
                 i -= (tile.TileFrameX / 18);
                 j -= (tile.TileFrameY / 18);
-                Main.NewText("Transfer Rate: " + ManaTEutils.TransferRate(i, j));
-                Main.NewText("Connections To:");
-                for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsTo(i, j)[k].Y.ToString());
 
-                Main.NewText("Connections From:");
-                for (int k = 0; k < ManaTEutils.ConnectionsFrom(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsFrom(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsFrom(i, j)[k].Y.ToString());
+                if (TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
+                {
+                    Main.NewText("Transfer Rate: " + TE.TransferRate);
+                    Main.NewText("Connections To:");
+                    for (int k = 0; k < TE.ConnectionsTo.Count; k++)
+                        Main.NewText($"{k} | X: {TE.ConnectionsTo[k].X} | Y: {TE.ConnectionsTo[k].Y}");
+
+                    Main.NewText("Connections From:");
+                    for (int k = 0; k < TE.ConnectionsFrom.Count; k++)
+                        Main.NewText($"{k} | X: {TE.ConnectionsFrom[k].X} | Y: {TE.ConnectionsFrom[k].Y}");
+                }
             }
 
             return false;
@@ -149,7 +153,7 @@ namespace GSMP.Content.Tiles
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<Items.Placeable.ManaBallItem>();
-            player.cursorItemIconText = "  Mana: " + ManaTEutils.Mana(X, Y).ToString() + " / " + ManaTEutils.MaxMana(X, Y).ToString();
+            player.cursorItemIconText = "  Mana: " + TEutils.Mana(X, Y).ToString() + " / " + TEutils.MaxMana(X, Y).ToString();
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)

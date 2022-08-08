@@ -22,7 +22,7 @@ namespace GSMP.Content.TileEntities
 
         public override bool IsTileValidForEntity(int x, int y)
         {
-            return ManaTEutils.IsConnectionValid(Main.tile[x, y].TileType) && Main.tile[x, y].HasTile;
+            return TEutils.IsConnectionValid(Main.tile[x, y].TileType) && Main.tile[x, y].HasTile;
         }
 
         public override void Update() // Used to check if Tiles this tile is connected to are still active and to transfer mana to linked Entities
@@ -30,14 +30,14 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (tile == null || !tile.HasTile/* || !ManaTEutils.IsConnectionValid(tile.TileType)*/)
+                if (tile == null || !tile.HasTile || !TEutils.IsConnectionValid(tile.TileType))
                     ConnectionsTo.RemoveAt(k);
             }
 
             for (int k = 0; k < ConnectionsFrom.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsFrom[k].X, (int)ConnectionsFrom[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.IsConnectionValid(tile.TileType))
+                if (tile == null || !tile.HasTile || !TEutils.IsConnectionValid(tile.TileType))
                     ConnectionsFrom.RemoveAt(k);
             }
 
@@ -153,11 +153,16 @@ namespace GSMP.Content.TileEntities
                     //Main.NewText(str1);
                     //Main.NewText(str2);
                     //Main.NewText(str3);
+                    void Mana(int x, int y, int num)
+                    {
+                        if (TEutils.TryManaEntity(x, y, out ManaStorageEntity TE))
+                            TE.StoredMana += num;
+                    }
 
                     for (int k = 0; k < current.Length; k++)
                     {
                         // Applying all the calculated changes
-                        ManaTEutils.Mana((int)connections[k].X, (int)connections[k].Y, changes[k]);
+                        Mana((int)connections[k].X, (int)connections[k].Y, changes[k]);
                     }
                     return RotationNum;
                 }
@@ -190,8 +195,11 @@ namespace GSMP.Content.TileEntities
 
             for (int k = 0; k < connections.Count; k++)
             {
-                current[k] = ManaTEutils.Mana((int)connections[k].X, (int)connections[k].Y);
-                maxes[k] = ManaTEutils.MaxMana((int)connections[k].X, (int)connections[k].Y);
+                if (TEutils.TryManaEntity((int)connections[k].X, (int)connections[k].Y, out ManaStorageEntity TE))
+                {
+                    current[k] = TE.StoredMana;
+                    maxes[k] = TE.MaxMana;
+                }
             }
 
             if (RotationNum >= connections.Count) RotationNum = 0;

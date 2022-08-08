@@ -15,13 +15,13 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.IsConnectionValid(tile.TileType))
+                if (tile == null || !tile.HasTile || !TEutils.IsConnectionValid(tile.TileType))
                     ConnectionsTo.RemoveAt(k);
             }
 
             foreach (Item item in Main.item)
             {
-                if (ManaTEutils.ManaItems.Contains(item.type) && item.position.DistanceSQ(new Vector2(Position.X * 16 + 12, Position.Y * 16 + 12)) < 6144)
+                if (TEutils.ManaItems.Contains(item.type) && item.position.DistanceSQ(new Vector2(Position.X * 16 + 12, Position.Y * 16 + 12)) < 6144)
                 {
                     if (ConnectionsTo.Count > 0)
                     {

@@ -84,9 +84,9 @@ namespace GSMP.Content.Tiles
             int X = i - (tile.TileFrameX / 18);
             int Y = j - (tile.TileFrameY / 18);
 
-            for (int k = 0; k < ManaTEutils.ConnectionsTo(X, Y).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            for (int k = 0; k < TEutils.ConnectionsTo(X, Y).Length; k++) // For all the connections the tile has, draw a line to the connected node
             {
-                Vector2 vector2 = new Vector2(ManaTEutils.ConnectionsTo(X, Y)[k].X * 16, ManaTEutils.ConnectionsTo(X, Y)[k].Y * 16);
+                Vector2 vector2 = new Vector2(TEutils.ConnectionsTo(X, Y)[k].X * 16, TEutils.ConnectionsTo(X, Y)[k].Y * 16);
                 Vector2 vector1 = new Vector2(X * 16, Y * 16);
 
                 Vector2[] points = new Vector2[] { vector1, vector2 };
@@ -104,8 +104,8 @@ namespace GSMP.Content.Tiles
                 i = i - (tile.TileFrameX / 18);
                 j = j - (tile.TileFrameY / 18);
                 Main.NewText("Connections To:");
-                for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsTo(i, j)[k].Y.ToString());
+                for (int k = 0; k < TEutils.ConnectionsTo(i, j).Length; k++)
+                    Main.NewText(k.ToString() + " | X: " + TEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + TEutils.ConnectionsTo(i, j)[k].Y.ToString());
             }
             return false;
         }

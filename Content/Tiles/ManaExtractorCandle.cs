@@ -32,8 +32,8 @@ namespace GSMP.Content.Tiles
             if (Main.LocalPlayer.HeldItem.type != ModContent.ItemType<Items.Magic.ManaTransferer>())
             {
                 Main.NewText("Connections To:");
-                for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsTo(i, j)[k].Y.ToString());
+                for (int k = 0; k < TEutils.ConnectionsTo(i, j).Length; k++)
+                    Main.NewText(k.ToString() + " | X: " + TEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + TEutils.ConnectionsTo(i, j)[k].Y.ToString());
             }
 
             return false;
@@ -85,9 +85,9 @@ namespace GSMP.Content.Tiles
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            for (int k = 0; k < TEutils.ConnectionsTo(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
             {
-                Vector2 vector2 = new Vector2(ManaTEutils.ConnectionsTo(i, j)[k].X * 16, ManaTEutils.ConnectionsTo(i, j)[k].Y * 16);
+                Vector2 vector2 = new Vector2(TEutils.ConnectionsTo(i, j)[k].X * 16, TEutils.ConnectionsTo(i, j)[k].Y * 16);
                 Vector2 vector1 = new Vector2(i * 16, j * 16);
 
                 Vector2[] points = new Vector2[] { vector1, vector2 };
