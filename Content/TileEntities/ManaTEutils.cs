@@ -106,6 +106,13 @@ namespace GSMP.Content.TileEntities
             else return null;
         }
 
+        public static bool TryModEntity(int i, int j, out ModTileEntity entity)
+        {
+            entity = modEntity(i, j);
+            if (entity != null) return true;
+            else return false;
+        }
+
         public static bool TryManaEntity(int i, int j, out ManaStorageEntity TE) // The REAL only good method
         {
             ModTileEntity entity = modEntity(i, j);

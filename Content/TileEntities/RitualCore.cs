@@ -6,6 +6,7 @@ using GSMP.DataStructures;
 using Terraria.ModLoader.IO;
 using Microsoft.Xna.Framework;
 using Terraria.ObjectData;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GSMP.Content.TileEntities
 {
@@ -34,7 +35,7 @@ namespace GSMP.Content.TileEntities
         internal int timer;
         internal float drainbuffer;
 
-
+        public bool projBool;
 
         public override bool IsTileValidForEntity(int x, int y)
         {

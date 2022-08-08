@@ -3,15 +3,19 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace GSMP.Content.Projectiles
 {
     public class CoolAuraProj : ModProjectile
     {
+        public override string Texture => "GSMP/Assets/Projectile Images/Ball";
         public int X;
         public int Y;
         public int dist;
         public int num;
+
+        internal float rad;
 
         public override void OnSpawn(IEntitySource spawnSource)
         {
@@ -21,6 +25,8 @@ namespace GSMP.Content.Projectiles
                 Y = source.Y;
                 dist = source.dist;
                 num = source.num;
+
+                rad = 0f;
 
                 if (source.Master && Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -39,6 +45,13 @@ namespace GSMP.Content.Projectiles
                     }
                 }
             }
+        }
+
+        public override void AI()
+        {
+            Projectile.position.X = X + (float)(Math.Cos(rad) * dist);
+            Projectile.position.Y = Y + (float)(Math.Sin(rad) * dist);
+            rad += (float)Math.PI / 90f;
         }
     }
 

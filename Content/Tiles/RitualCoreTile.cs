@@ -36,73 +36,52 @@ namespace GSMP.Content.Tiles
             TileObjectData.addTile(Type);
         }
 
-        internal int num;
-
-        public override bool RightClick(int i, int j)
-        {
-            //Vector2 NextVector2Unit(float startRotation = 0f, float rotationRange = (float)Math.PI * 2f)
-            //{
-            //    return (startRotation + rotationRange * Main.rand.NextFloat()).ToRotationVector2();
-            //}
-            Vector2 NextVector2CircularEdge(float a, float circleHalfWidth, float circleHalfHeight, float startRotation = 0f, float rotationRange = (float)Math.PI * 2f)
-            {
-                return (startRotation + rotationRange * a).ToRotationVector2() * new Vector2(circleHalfWidth, circleHalfHeight);
-            }
-
-            int radius = 5;
-            //for (int a = 0; a < 360; a++)
-            //{
-            //    int X = (int)(i + Math.Cos(a * (180 / Math.PI)) * 5);
-            //    int Y = (int)(j - Math.Sin(a * (180 / Math.PI)) * 5);
-            //    Vector2 vec = NextVector2CircularEdge(a / 360f, 5, 5);
-            //    X = i + (int)vec.X;
-            //    Y = j + (int)vec.Y;
-            //    WorldGen.PlaceTile(X, Y, TileID.Dirt);
-            //}
-
-            Main.NewText(num);
-
-            Vector2 vec = NextVector2CircularEdge(num / 60f, 15, 15);
-            int X = i + (int)vec.X;
-            int Y = j + (int)vec.Y;
-            WorldGen.PlaceTile(X, Y, TileID.Dirt);
-            num++;
-
-            return true;
-        }
+        internal int timer;
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            void CreateAura(int x, int y, int dist)
+            void CreateAura(int x, int y, int dist, int num1)
             {
+                Vector2 NextVector2CircularEdge(float a, float startRotation = 0f, float rotationRange = (float)Math.PI * 2f)
+                {
+                    return (startRotation + rotationRange * a).ToRotationVector2() * new Vector2(a, a);
+                }
+
                 Vector2 Center = new Vector2(x, y);
 
-                int dustMax = dist / 500 * 100;
-                if (dustMax < 10) dustMax = 10;
-                else if (dustMax > 40) dustMax = 40;
-
-                for (int i = 0; i < dustMax; i++)
-                {
-                    Vector2 vector2 = Center + Main.rand.NextVector2CircularEdge(dist, dist);
-                    Vector2 offset = vector2 - Main.LocalPlayer.Center;
-                    if (Math.Abs(offset.X) > Main.screenWidth * 0.6f || Math.Abs(offset.Y) > Main.screenHeight * 0.6f) continue;
-                    Dust dust = Main.dust[Dust.NewDust(vector2, 0, 0, DustID.PinkTorch, 0, 0, 0)];
-                    dust.velocity.Y *= 0.1f;
-                    dust.velocity.X *= 0.1f;
-                    dust.noGravity = true;
-                }
+                Vector2 vector2 = Center + NextVector2CircularEdge(dist, num1 * ((float)Math.PI) / 180);
+                Vector2 offset = vector2 - Main.LocalPlayer.Center;
+                //if (Math.Abs(offset.X) > Main.screenWidth * 0.6f || Math.Abs(offset.Y) > Main.screenHeight * 0.6f)
+                Dust dust = Main.dust[Dust.NewDust(vector2, 0, 0, ModContent.DustType<RitualDust>(), 0, 0, 0, Color.Pink)];
+                dust.velocity.Y *= 0.02f;
+                dust.velocity.X *= 0.02f;
+                dust.noGravity = true;
             }
 
-            for (int e = 0; e < 6; e++)  CreateAura(i * 16 + 4, j * 16 + 4, 120);
+            int num = 3;
+
+            for (int e = 0; e < 4; e++)
+            {
+                for (int a = 1; a <= num; a++)
+                    CreateAura(i * 16 + 4, j * 16 + 4, 120, timer * 2 + (360 * a / num));
+                timer += 1;
+            }
+
+            //if (TileEntities.TEutils.TryModEntity(i, j, out ModTileEntity entity) && entity is TileEntities.RitualCoreTE ModEntity && !ModEntity.projBool)
+            //{
+            //    Projectiles.AuraProjSpawnSource source = new Projectiles.AuraProjSpawnSource(i * 16, j * 16, 20, true, 1);
+            //    Projectile.NewProjectile(source, new Vector2(i * 16, j * 16), Vector2.Zero, ModContent.ProjectileType<Projectiles.CoolAuraProj>(), 0, 0);
+            //    ModEntity.projBool = true;
+            //}
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            num = 0;
+            timer = 0;
             TileEntity.PlaceEntityNet(i, j, ModContent.TileEntityType<TileEntities.RitualCoreTE>());
-            if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is TileEntities.RitualCoreTE modEntity)
+            if (TileEntities.TEutils.TryModEntity(i, j, out ModTileEntity entity) && entity is TileEntities.RitualCoreTE modEntity)
             {
-                
+                modEntity.projBool = false;
             }
         }
 
@@ -112,6 +91,44 @@ namespace GSMP.Content.Tiles
             if (TileEntity.ByPosition.TryGetValue(new Point16(i, j), out TileEntity entity) && entity is TileEntities.RitualCoreTE modEntity)
                 modEntity.Kill(i, j);
             return true;
+        }
+    }
+
+    public class RitualDust : ModDust
+    {
+        public override string Texture => null;
+
+        public override void OnSpawn(Dust dust)
+        {
+            dust.noGravity = true;
+
+            // Since the vanilla dust texture has all the dust in 1 file, we'll need to do some math.
+            // If you want to use a vanilla dust texture, you can copy and paste it, changing the desiredVanillaDustTexture
+            int desiredVanillaDustTexture = 173;
+            int frameX = desiredVanillaDustTexture * 10 % 1000;
+            int frameY = desiredVanillaDustTexture * 10 / 1000 * 30 + Main.rand.Next(3) * 10;
+            dust.frame = new Rectangle(frameX, frameY, 8, 8);
+            dust.alpha = 150;
+
+            //dust.velocity = Vector2.Zero;
+        }
+
+        public override bool Update(Dust dust)
+        { // Calls every frame the dust is active
+            dust.position += dust.velocity;
+            dust.rotation += dust.velocity.X * 0.15f;
+            dust.scale *= 0.992f;
+
+            float light = dust.scale;
+
+            Lighting.AddLight(dust.position, dust.color.R, dust.color.G, dust.color.B);
+
+            if (dust.scale < 0.4f)
+            {
+                dust.active = false;
+            }
+
+            return false; // Return false to prevent vanilla behavior.
         }
     }
 }
