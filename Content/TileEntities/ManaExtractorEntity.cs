@@ -14,7 +14,7 @@ namespace GSMP.Content.TileEntities
             for (int k = 0; k < ConnectionsTo.Count; k++)
             {
                 Tile tile = Main.tile[(int)ConnectionsTo[k].X, (int)ConnectionsTo[k].Y];
-                if (tile == null || !tile.HasTile || !ManaTEutils.IsConnectionValid(tile.TileType))
+                if (tile == null || !tile.HasTile || !TEutils.IsConnectionValid(tile.TileType))
                     ConnectionsTo.RemoveAt(k);
             }
 
@@ -25,7 +25,7 @@ namespace GSMP.Content.TileEntities
             foreach (NPC npc in Main.npc)
             {
                 if (npc.active 
-                    && ManaTEutils.CanNPCHaveMana(npc) 
+                    && TEutils.CanNPCHaveMana(npc) 
                     && npc.position.DistanceSQ(new Vector2(Position.X * 16 + 12, Position.Y * 16 + 12)) < 6144 
                     && npc.GetGlobalNPC<GlobalItems.ManaGlobalNPC>().Mana > 0)
                 {

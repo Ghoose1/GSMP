@@ -1,29 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using System.ComponentModel;
 using Terraria.ModLoader.Config;
-using Terraria.ModLoader.Config.UI;
-using Terraria.UI;
 
 namespace GSMP
 {
-    public class GSMPConfig : ModConfig
-    {
-        public override ConfigScope Mode => ConfigScope.ClientSide;
+	public class GSMPConfig : ModConfig
+	{
+		public override ConfigScope Mode => ConfigScope.ServerSide;
 
-        [DefaultValue(true)]
-        [Label("Debug Mode")]
-        public bool DebugMode;
-    }
+		//[Header("$Mods.ExampleMod.Config.ItemHeader")]
+		//[Label("$Mods.ExampleMod.Config.ExampleWingsToggle.Label")] 
+		//[Tooltip("$Mods.ExampleMod.Config.ExampleWingsToggle.Tooltip")] 
+		[DefaultValue(300)] 
+		public int RitualCheckTimer;
+	}
 }

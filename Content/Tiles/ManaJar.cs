@@ -58,16 +58,16 @@ namespace GSMP.Content.Tiles
 
         public override bool RightClick(int i, int j) // Debug stuff
         {
-            if (Main.LocalPlayer.HeldItem.type != ModContent.ItemType<Items.Magic.ManaTransferer>())
+            if (Main.LocalPlayer.HeldItem.type != ModContent.ItemType<Items.Magic.ManaTransferer>() && TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
             {
-                Main.NewText("Transfer Rate: " + ManaTEutils.TransferRate(i, j));
+                Main.NewText("Transfer Rate: " + TE.TransferRate);
                 Main.NewText("Connections To:");
-                for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsTo(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsTo(i, j)[k].Y.ToString());
+                for (int k = 0; k < TE.ConnectionsTo.Count; k++)
+                    Main.NewText($"{k} | X: {TE.ConnectionsTo[k].X} | Y: {TE.ConnectionsTo[k].Y}");
             
                 Main.NewText("Connections From:");
-                for (int k = 0; k < ManaTEutils.ConnectionsFrom(i, j).Length; k++)
-                    Main.NewText(k.ToString() + " | X: " + ManaTEutils.ConnectionsFrom(i, j)[k].X.ToString() + " | Y: " + ManaTEutils.ConnectionsFrom(i, j)[k].Y.ToString());
+                for (int k = 0; k < TE.ConnectionsFrom.Count; k++)
+                    Main.NewText($"{k} | X: {TE.ConnectionsFrom[k].X} | Y: {TE.ConnectionsFrom[k].Y}");
             }
 
             return false;
@@ -79,7 +79,7 @@ namespace GSMP.Content.Tiles
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
             player.cursorItemIconID = ModContent.ItemType<Items.Placeable.ManaJarItem>();
-            player.cursorItemIconText = "  Mana: " + ManaTEutils.Mana(i, j).ToString() + " / " + ManaTEutils.MaxMana(i, j).ToString();
+            player.cursorItemIconText = "  Mana: " + TEutils.Mana(i, j).ToString() + " / " + TEutils.MaxMana(i, j).ToString();
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
@@ -89,13 +89,13 @@ namespace GSMP.Content.Tiles
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange); // These two lines are from some example tile, i dont entirely understand them.
             Vector2 Pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
 
-            int frameX = (int)Math.Floor((float)(ManaTEutils.Mana(i, j) / (ManaTEutils.MaxMana(i, j) / 5))); // Making the sprite change depending on mana
+            int frameX = (int)Math.Floor((float)(TEutils.Mana(i, j) / (TEutils.MaxMana(i, j) / 5))); // Making the sprite change depending on mana
 
             spriteBatch.Draw(texture, Pos, new Rectangle(frameX * 18, 0, 16, 16), Lighting.GetColor(i, j), 0f, default, 1f, SpriteEffects.None, 0f);
 
-            for (int k = 0; k < ManaTEutils.ConnectionsTo(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
+            for (int k = 0; k < TEutils.ConnectionsTo(i, j).Length; k++) // For all the connections the tile has, draw a line to the connected node
             {
-                Vector2 vector2 = new Vector2(ManaTEutils.ConnectionsTo(i, j)[k].X * 16, ManaTEutils.ConnectionsTo(i, j)[k].Y * 16);
+                Vector2 vector2 = new Vector2(TEutils.ConnectionsTo(i, j)[k].X * 16, TEutils.ConnectionsTo(i, j)[k].Y * 16);
                 Vector2 vector1 = new Vector2(i * 16, j * 16);
 
                 Vector2[] points = new Vector2[] { vector1, vector2 };
@@ -108,8 +108,7 @@ namespace GSMP.Content.Tiles
 
         public override bool Drop(int i, int j) // Kills The TE and drops a star if it had mana
         {
-            ManaStorageEntity TE = ManaTEutils.modEntity(i, j);
-            if (TE != null)
+            if (TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
             {
                 if (TE.StoredMana != 0)
                 {

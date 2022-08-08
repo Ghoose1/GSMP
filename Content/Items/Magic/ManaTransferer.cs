@@ -69,14 +69,28 @@ namespace GSMP.Content.Items.Magic
             //int X = i;
             //int Y = j;
 
-            TileObjectData data = TileObjectData.GetTileData(tile.TileType, 0);
+            //TileObjectData data = TileObjectData.GetTileData(tile.TileType, 0);
+            //if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
+            //{
+            //    i -= (tile.TileFrameX / 18);
+            //    j -= (tile.TileFrameY / 18);
+            //}
+
+            TileObjectData data = TileObjectData.GetTileData(tile);
             if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
             {
-                i -= (tile.TileFrameX / 18);
-                j -= (tile.TileFrameY / 18);
+                int tileFrameX = tile.TileFrameX; // i should improve this code
+                int tileFrameY = tile.TileFrameY;
+                tileFrameX %= data.CoordinateFullWidth;
+                tileFrameY %= data.CoordinateFullHeight;
+                i -= (tileFrameX / 18);
+                j -= (tileFrameY / 18);
+                tile = Main.tile[i, j];
+                //Main.NewText($"Height: {tileFrameY / 18}, Width: {tileFrameX / 18}");
+                //sMain.NewText($"X: {i} Y: {j} Type: {tile.TileType}");
             }
 
-            if (tile.HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
+            if (tile.HasTile && TEutils.IsConnectionValid(tile.TileType))
             {
                 if (!flag1)
                 {
@@ -87,13 +101,16 @@ namespace GSMP.Content.Items.Magic
                 }
                 else
                 {
-                    if ((i != X1 || j != Y1) && Main.tile[X1, Y1].HasTile && ManaTEutils.IsConnectionValid(tile.TileType))
+                    if ((i != X1 || j != Y1) && Main.tile[X1, Y1].HasTile && TEutils.IsConnectionValid(tile.TileType))
                     {
                         Main.NewText("Connection Created");
                         Vector2 point1 = new Vector2(X1, Y1);
                         Vector2 point2 = new Vector2(i, j);
-                        ManaTEutils.ConnectionsFrom(i, j, point1);
-                        ManaTEutils.ConnectionsTo(X1, Y1, point2);
+
+                        if (TEutils.TryManaEntity(i, j, out ManaStorageEntity TE)) TE.ConnectionsFrom.Add(point1);
+
+                        if (TEutils.TryManaEntity(X1, Y1, out ManaStorageEntity TE2)) TE2.ConnectionsTo.Add(point2);
+
                         flag1 = false;
                     }
                     else
@@ -121,18 +138,28 @@ namespace GSMP.Content.Items.Magic
             int i = (int)Main.MouseWorld.X / 16;
             int j = (int)Main.MouseWorld.Y / 16;
             Tile tile = Main.tile[i, j];
-            int X = i - (tile.TileFrameX / 18);
-            int Y = j - (tile.TileFrameY / 18);
+
+            TileObjectData data = TileObjectData.GetTileData(tile);
+            if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
+            {
+                int tileFrameX = tile.TileFrameX; // i should improve this code
+                int tileFrameY = tile.TileFrameY;
+                tileFrameX %= data.CoordinateFullWidth;
+                tileFrameY %= data.CoordinateFullHeight;
+                i -= (tileFrameX / 18);
+                j -= (tileFrameY / 18);
+                tile = Main.tile[i, j];
+            }
 
             int TileMana = 0;
             int TileManaMax = 0;
-            if (ManaTEutils.IsConnectionValid(tile.TileType))
+            if (TEutils.IsConnectionValid(tile.TileType) && TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
             {
-                TileMana = ManaTEutils.Mana(X, Y);
-                TileManaMax = ManaTEutils.MaxMana(X, Y);
+                TileMana = TE.StoredMana;
+                TileManaMax = TE.MaxMana;
             }
 
-            return ManaTEutils.IsConnectionValid(tile.TileType) && TileMana <= TileManaMax - Item.mana;
+            return TEutils.IsConnectionValid(tile.TileType) && TileMana <= TileManaMax - Item.mana;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -147,14 +174,21 @@ namespace GSMP.Content.Items.Magic
                 int i = (int)Main.MouseWorld.X / 16;
                 int j = (int)Main.MouseWorld.Y / 16;
                 Tile tile = Main.tile[i, j];
-                int X = i - (tile.TileFrameX / 18);
-                int Y = j - (tile.TileFrameY / 18);
 
-                if (ManaTEutils.IsConnectionValid(tile.TileType))
+                TileObjectData data = TileObjectData.GetTileData(tile);
+                if (data != null && data.Width != 1 && data.Height != 1) // If the tile is a mutlityle, have the checks use the origin/ top left tile
                 {
-                    ManaStorageEntity TE = ManaTEutils.modEntity(i, j);
-                    TE.StoredMana += Item.mana;
+                    int tileFrameX = tile.TileFrameX; // i should improve this code
+                    int tileFrameY = tile.TileFrameY;
+                    tileFrameX %= data.CoordinateFullWidth;
+                    tileFrameY %= data.CoordinateFullHeight;
+                    i -= (tileFrameX / 18);
+                    j -= (tileFrameY / 18);
+                    tile = Main.tile[i, j];
                 }
+
+                if (TEutils.IsConnectionValid(tile.TileType) && TEutils.TryManaEntity(i, j, out ManaStorageEntity TE))
+                    TE.StoredMana += Item.mana;
             }
 
             return true;

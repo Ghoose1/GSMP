@@ -7,7 +7,7 @@ using Terraria.ModLoader.IO;
 
 namespace GSMP
 {
-    public class SpellPlayer : ModPlayer
+    public class GSMPPlayer : ModPlayer
     {
         public List<Spell> StoredSpells;
         public bool canPlaceSpells;
@@ -48,7 +48,7 @@ namespace GSMP
                 case "add":
                 case "Add":
                     {
-                        SpellPlayer player = caller.Player.GetModPlayer<SpellPlayer>();
+                        GSMPPlayer player = caller.Player.GetModPlayer<GSMPPlayer>();
                         Spell spell = new Spell(args[1]);
                         player.StoredSpells.Add(spell);
                         break;
@@ -56,14 +56,14 @@ namespace GSMP
                 case "remove":
                 case "Remove":
                     {
-                        SpellPlayer player = caller.Player.GetModPlayer<SpellPlayer>();
+                        GSMPPlayer player = caller.Player.GetModPlayer<GSMPPlayer>();
                         player.StoredSpells.Clear();
                         break;
                     }
                 case "list":
                 case "List":
                     {
-                        SpellPlayer player = caller.Player.GetModPlayer<SpellPlayer>();
+                        GSMPPlayer player = caller.Player.GetModPlayer<GSMPPlayer>();
                         for (int a = 0; a < player.StoredSpells.Count; a++)
                             Main.NewText(player.StoredSpells[a].Type);
                         break;
@@ -83,7 +83,7 @@ namespace GSMP
         public override string Command => "d";
         public override void Action(CommandCaller caller, string input, string[] args)
         {
-            SpellPlayer player = caller.Player.GetModPlayer<SpellPlayer>();
+            GSMPPlayer player = caller.Player.GetModPlayer<GSMPPlayer>();
             player.debug = !player.debug;
             Main.NewText("Debug mode " + (player.debug ? "On" : "Off"));
         }
